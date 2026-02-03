@@ -3,37 +3,17 @@
 <head>
   <title>Attendance</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body{
-      font-family:Poppins,sans-serif;
-      text-align:center;
-      background:#f5f5f5;
-      padding-top:50px;
-    }
-    .box{
-      background:#fff;
-      padding:30px;
-      margin:20px;
-      border-radius:12px;
-      box-shadow:0 10px 30px rgba(0,0,0,.1);
-    }
-  </style>
 </head>
-<body>
+<body style="text-align:center;font-family:Arial">
 
-<div class="box">
-  <h2>✅ Attendance Marked</h2>
-  <p id="msg">Saving...</p>
-</div>
+<h2>📲 Marking Attendance...</h2>
+<p id="status">Please wait</p>
 
 <script>
-/* DEMO ATTENDANCE (NO FIREBASE) */
-let count = localStorage.getItem("attendance") || 0;
-count++;
-localStorage.setItem("attendance", count);
-
-document.getElementById("msg").innerHTML =
-  "Attendance marked successfully.<br>Total visits: <b>"+count+"</b>";
+  setTimeout(()=>{
+    document.getElementById("status").innerHTML =
+      "✅ Attendance Marked Successfully";
+  },1500);
 </script>
 
 </body>

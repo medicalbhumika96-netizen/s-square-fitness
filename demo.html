@@ -1,34 +1,46 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Scan for Attendance</title>
+  <title>Scan Attendance | S Square Fitness</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- QR SCANNER LIB -->
+  <script src="https://unpkg.com/html5-qrcode"></script>
+
   <style>
     body{
-      font-family: Poppins, sans-serif;
-      text-align:center;
-      background:#000;
-      color:#fff;
+      font-family: Arial;
+      text-align: center;
+      background:#0f172a;
+      color:white;
     }
-    #qr{
-      margin-top:30px;
+    #reader{
+      width:300px;
+      margin:auto;
     }
   </style>
 </head>
 <body>
 
-<h2>📸 Scan for Attendance</h2>
-<p>S Square Fitness</p>
+<h2>📸 Scan QR for Attendance</h2>
+<p>Open camera & scan gym QR</p>
 
-<div id="qr"></div>
+<div id="reader"></div>
+<p id="msg"></p>
 
-<script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
 <script>
-new QRCode(document.getElementById("qr"), {
-  text: window.location.origin + "/mark.html",
-  width:220,
-  height:220
-});
+  function onScanSuccess(decodedText){
+    document.getElementById("msg").innerHTML = "✅ QR Scanned";
+
+    // redirect to mark page
+    window.location.href = decodedText;
+  }
+
+  new Html5Qrcode("reader").start(
+    { facingMode: "environment" },
+    { fps: 10, qrbox: 250 },
+    onScanSuccess
+  );
 </script>
 
 </body>
