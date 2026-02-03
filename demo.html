@@ -1,46 +1,85 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Scan Attendance | S Square Fitness</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<title>Scan QR for Attendance</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- QR SCANNER LIB -->
-  <script src="https://unpkg.com/html5-qrcode"></script>
+<script src="https://unpkg.com/html5-qrcode"></script>
 
-  <style>
-    body{
-      font-family: Arial;
-      text-align: center;
-      background:#0f172a;
-      color:white;
-    }
-    #reader{
-      width:300px;
-      margin:auto;
-    }
-  </style>
+<style>
+  body{
+    margin:0;
+    min-height:100vh;
+    background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+    color:#fff;
+    font-family:Arial, sans-serif;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+  }
+  h2{margin-bottom:10px}
+  button{
+    padding:12px 20px;
+    font-size:16px;
+    border:none;
+    border-radius:8px;
+    background:#00e5ff;
+    color:#000;
+    cursor:pointer;
+    margin-bottom:20px;
+  }
+  #reader{
+    width:300px;
+    display:none;
+  }
+  #status{
+    margin-top:15px;
+    font-size:14px;
+  }
+</style>
 </head>
 <body>
 
 <h2>📸 Scan QR for Attendance</h2>
-<p>Open camera & scan gym QR</p>
+<p>Tap button to open camera</p>
+
+<button onclick="startScan()">Open Camera</button>
 
 <div id="reader"></div>
-<p id="msg"></p>
+<p id="status"></p>
 
 <script>
-  function onScanSuccess(decodedText){
-    document.getElementById("msg").innerHTML = "✅ QR Scanned";
+let qr;
 
-    // redirect to mark page
-    window.location.href = decodedText;
-  }
+function startScan(){
+  document.getElementById("reader").style.display = "block";
+  document.getElementById("status").innerText = "Opening camera...";
 
-  new Html5Qrcode("reader").start(
-    { facingMode: "environment" },
-    { fps: 10, qrbox: 250 },
-    onScanSuccess
-  );
+  qr = new Html5Qrcode("reader");
+
+  Html5Qrcode.getCameras().then(cameras => {
+    if(!cameras.length){
+      document.getElementById("status").innerText = "No camera found";
+      return;
+    }
+
+    qr.start(
+      cameras[0].id,
+      { fps:10, qrbox:250 },
+      text => {
+        document.getElementById("status").innerText = "QR Scanned ✔";
+        qr.stop();
+        window.location.href = text;
+      },
+      err => {}
+    );
+  }).catch(err=>{
+    document.getElementById("status").innerText =
+      "Camera error: " + err;
+  });
+}
 </script>
 
 </body>
