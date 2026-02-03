@@ -333,6 +333,13 @@ function updateAnalytics(){
   expiredFees.innerText = members.length - active;
 }
 
+function loadDemoAttendance(){
+  const count = localStorage.getItem("attendance") || 0;
+  document.getElementById("mAttendance").innerText =
+    Math.min(100, count * 5) + "%";
+}
+loadDemoAttendance();
+
 /* ======================
    LOGOUT
 ====================== */

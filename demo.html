@@ -2,31 +2,34 @@
 <html>
 <head>
   <title>Scan for Attendance</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body{
-      font-family:Poppins, sans-serif;
-      background:#0b0b0b;
-      color:#fff;
+      font-family: Poppins, sans-serif;
       text-align:center;
-      padding-top:40px;
+      background:#000;
+      color:#fff;
+    }
+    #qr{
+      margin-top:30px;
     }
   </style>
 </head>
 <body>
 
-<h2>📷 Scan for Attendance</h2>
+<h2>📸 Scan for Attendance</h2>
+<p>S Square Fitness</p>
+
 <div id="qr"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
 <script>
 new QRCode(document.getElementById("qr"), {
-  text: "https://medicalbhumika96-netizen.github.io/s-square-fitness/mark.html",
+  text: window.location.origin + "/mark.html",
   width:220,
   height:220
 });
 </script>
-
-<p>Scan this QR to mark attendance</p>
 
 </body>
 </html>
