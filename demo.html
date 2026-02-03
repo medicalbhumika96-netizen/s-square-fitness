@@ -1,85 +1,63 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<title>Scan QR for Attendance</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <title>QR Attendance</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<script src="https://unpkg.com/html5-qrcode"></script>
+  <!-- QR Scanner lib -->
+  <script src="https://unpkg.com/html5-qrcode"></script>
 
-<style>
-  body{
-    margin:0;
-    min-height:100vh;
-    background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
-    color:#fff;
-    font-family:Arial, sans-serif;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-  }
-  h2{margin-bottom:10px}
-  button{
-    padding:12px 20px;
-    font-size:16px;
-    border:none;
-    border-radius:8px;
-    background:#00e5ff;
-    color:#000;
-    cursor:pointer;
-    margin-bottom:20px;
-  }
-  #reader{
-    width:300px;
-    display:none;
-  }
-  #status{
-    margin-top:15px;
-    font-size:14px;
-  }
-</style>
+  <style>
+    body{
+      margin:0;
+      font-family:Poppins, sans-serif;
+      background:#0b132b;
+      color:#fff;
+      text-align:center;
+    }
+    h2{margin:20px 0}
+    #reader{
+      width:300px;
+      margin:auto;
+      border:4px solid #00e5ff;
+      border-radius:16px;
+      overflow:hidden;
+    }
+    .note{
+      margin-top:15px;
+      opacity:.8;
+      font-size:14px;
+    }
+  </style>
 </head>
 <body>
 
-<h2>📸 Scan QR for Attendance</h2>
-<p>Tap button to open camera</p>
-
-<button onclick="startScan()">Open Camera</button>
+<h2>📷 Scan QR for Attendance</h2>
 
 <div id="reader"></div>
-<p id="status"></p>
+
+<p class="note">Point camera at gym QR code</p>
 
 <script>
-let qr;
+const qr = new Html5Qrcode("reader");
 
-function startScan(){
-  document.getElementById("reader").style.display = "block";
-  document.getElementById("status").innerText = "Opening camera...";
+qr.start(
+  { facingMode: "environment" }, // 🔥 BACK CAMERA
+  {
+    fps: 10,
+    qrbox: { width: 250, height: 250 } // 🔲 Scanner box
+  },
+  (decodedText) => {
+    alert("Attendance Marked ✅\n" + decodedText);
 
-  qr = new Html5Qrcode("reader");
-
-  Html5Qrcode.getCameras().then(cameras => {
-    if(!cameras.length){
-      document.getElementById("status").innerText = "No camera found";
-      return;
-    }
-
-    qr.start(
-      cameras[0].id,
-      { fps:10, qrbox:250 },
-      text => {
-        document.getElementById("status").innerText = "QR Scanned ✔";
-        qr.stop();
-        window.location.href = text;
-      },
-      err => {}
-    );
-  }).catch(err=>{
-    document.getElementById("status").innerText =
-      "Camera error: " + err;
-  });
-}
+    // yaha tum Firestore attendance add kar sakte ho
+    qr.stop();
+  },
+  (err) => {
+    // silent scan errors
+  }
+);
 </script>
 
 </body>
