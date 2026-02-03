@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>S Square Fitness Talegaon</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ================= HERO ================= -->
+<div class="hero" id="publicSite">
+  <div class="container">
+    <h1>S Square <span>Fitness</span></h1>
+    <p>Premium Gym | Cardio • Strength • Personal Training</p>
+    <a href="tel:8003929804" class="btn">📞 Call Now</a>
+    <a href="https://wa.me/918003929804" class="btn whatsapp">💬 WhatsApp</a>
+  </div>
+</div>
+
+<!-- ================= ABOUT ================= -->
+<section class="section-soft">
+  <div class="container">
+    <h2>Why Choose Us</h2>
+    <div class="features">
+      <div class="box">
+        <h3>Modern Equipment</h3>
+        <p>Latest machines for strength & cardio training.</p>
+      </div>
+      <div class="box">
+        <h3>Certified Trainers</h3>
+        <p>Professional guidance for best results.</p>
+      </div>
+      <div class="box">
+        <h3>Clean & Premium</h3>
+        <p>Hygienic, air-conditioned workout space.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= DASHBOARD SYSTEM ================= -->
+<section class="section-panel">
+  <div class="container dashboard">
+
+    <!-- MEMBER LOGIN -->
+    <div class="card" id="memberCard">
+      <h2>Member Login</h2>
+      <input id="memberUser" placeholder="Member ID">
+      <input id="memberPass" type="password" placeholder="Password">
+      <button onclick="memberLogin()">Login</button>
+      <p id="memberMsg"></p>
+    </div>
+
+    <!-- ADMIN LOGIN -->
+    <div class="card" id="adminLoginCard">
+      <h2>Admin Login</h2>
+      <input id="adminPass" type="password" placeholder="Admin Password">
+      <button onclick="adminLoginUI()">Login</button>
+      <p id="adminLoginMsg"></p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ================= ADMIN PANEL ================= -->
+<section class="admin-layout" id="adminSection" style="display:none">
+
+  <aside class="admin-sidebar">
+    <h2>S Square</h2>
+    <button onclick="showAdminTab('dashboard')">📊 Dashboard</button>
+    <button onclick="showAdminTab('members')">👥 Members</button>
+    <button onclick="adminLogout()" class="logout">🚪 Logout</button>
+  </aside>
+
+  <main class="admin-main">
+    <div class="admin-tab" id="dashboardTab">
+      <h2>Admin Dashboard</h2>
+      <div class="stat-grid">
+        <div class="stat-card"><h4>Total Members</h4><p id="totalMembers"></p></div>
+        <div class="stat-card"><h4>Active Fees</h4><p id="activeFees"></p></div>
+        <div class="stat-card"><h4>Expired Fees</h4><p id="expiredFees"></p></div>
+      </div>
+    </div>
+
+    <div class="admin-tab" id="membersTab" style="display:none">
+      <h2>Member Management</h2>
+
+      <form class="add-member-box" onsubmit="addMember(event)">
+        <input id="mUser" placeholder="Member ID" required>
+        <input id="mName" placeholder="Member Name" required>
+        <input id="mPass" placeholder="Password" required>
+        <input id="mExpiry" type="date" required>
+
+        <select id="mTrainer">
+          <option value="Trainer1">Trainer 1</option>
+          <option value="Trainer2">Trainer 2</option>
+        </select>
+
+        <select id="mPlan">
+          <option value="Monthly">Monthly</option>
+          <option value="Quarterly">Quarterly</option>
+          <option value="Yearly">Yearly</option>
+        </select>
+
+        <button type="submit">Add Member</button>
+        <p id="adminMsg"></p>
+      </form>
+
+      <table class="member-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Trainer</th>
+            <th>Expiry</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="memberTable"></tbody>
+      </table>
+    </div>
+  </main>
+</section>
+
+<!-- ================= MEMBER PANEL (ADMIN STYLE) ================= -->
+<section class="member-layout" id="memberSection" style="display:none">
+
+  <aside class="member-sidebar">
+    <h2>Member</h2>
+    <button onclick="showMemberTab('mdashboard')">🏠 Dashboard</button>
+    <button onclick="showMemberTab('workout')">🏋️ Workout</button>
+    <button onclick="showMemberTab('progress')">📊 Progress</button>
+    <button onclick="renewFee()">💳 Renew Fee</button>
+    <button onclick="chatTrainer()">💬 Support</button>
+    <button onclick="openDiet()">🥗 View Diet Plan</button>
+
+    <button class="logout" onclick="memberLogout()">🚪 Logout</button>
+  </aside>
+
+  <main class="member-main">
+
+   <div class="member-tab" id="mdashboard">
+  <h2>Welcome, <span id="memberName"></span></h2>
+
+  <div class="stat-grid">
+    <div class="stat-card">
+      <h4>Fee Status</h4>
+      <p id="mFeeStatus"></p>
+      <small id="mExpiry"></small>
+    </div>
+    <div class="stat-card">
+      <h4>Attendance</h4>
+      <p id="mAttendance">0%</p>
+    </div>
+  </div>
+
+  <!-- ✅ Attendance Chart INSIDE dashboard -->
+  <div id="attendanceChartBox" style="margin-top:30px">
+    <h3>📊 Attendance Overview</h3>
+    <canvas id="attendanceChart"></canvas>
+  </div>
+</div>
+
+
+    <div class="member-tab" id="workout" style="display:none">
+      <h2>Workout Plan</h2>
+      <ul id="workoutList">
+        <li>Monday – Chest</li>
+        <li>Tuesday – Back</li>
+        <li>Wednesday – Legs</li>
+      </ul>
+    </div>
+
+    <div class="member-tab" id="progress" style="display:none">
+      <h2>Weight Progress</h2>
+      <input id="weightInput" type="number" placeholder="Enter weight (kg)">
+      <button onclick="addWeight()">Add</button>
+      <ul id="weightList"></ul>
+    </div>
+
+  </main>
+ 
+
+</section>
+
+
+<footer>© 2026 S Square Fitness Talegaon</footer>
+
+<!-- FLOAT -->
+<div class="float">
+  <a href="tel:8003929804" class="call">📞</a>
+  <a href="https://wa.me/918003929804" class="whats">💬</a>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- FIREBASE -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+<!-- MAIN SCRIPT -->
+<script src="script.js"></script>
+
+</body>
+</html>

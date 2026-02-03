@@ -1,0 +1,505 @@
+/* =========================
+   GLOBAL RESET
+========================= */
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'Poppins',sans-serif;
+}
+
+body{
+  background:#0b0b0b;
+  color:#fff;
+  line-height:1.6;
+}
+
+/* =========================
+   LAYOUT SYSTEM
+========================= */
+.container{
+  max-width:1200px;
+  margin:auto;
+  padding:60px 20px;
+}
+
+.section-dark{ background:#0b0b0b; }
+.section-soft{ background:#0f1720; }
+.section-panel{
+  background:#050505;
+  border-top:2px solid #00c6ff;
+}
+
+/* =========================
+   HERO
+========================= */
+.hero{
+  min-height:100vh;
+  background:
+    linear-gradient(rgba(0,0,0,.75),rgba(0,0,0,.75)),
+    url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48');
+  background-size:cover;
+  background-position:center;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+}
+
+.hero h1{
+  font-size:3.2rem;
+  font-weight:700;
+}
+
+.hero span{ color:#00c6ff; }
+
+.hero p{
+  margin:15px 0;
+  color:#ccc;
+  font-size:1.1rem;
+}
+
+/* =========================
+   BUTTONS
+========================= */
+.btn{
+  display:inline-block;
+  margin:10px;
+  padding:12px 28px;
+  background:#00c6ff;
+  color:#000;
+  border-radius:30px;
+  font-weight:600;
+  text-decoration:none;
+  transition:.3s;
+}
+
+.btn:hover{ transform:translateY(-2px); }
+.btn.whatsapp{ background:#25D366; }
+
+/* =========================
+   HEADINGS
+========================= */
+h2{
+  text-align:center;
+  margin-bottom:40px;
+  font-size:2.3rem;
+}
+
+/* =========================
+   FEATURES
+========================= */
+.features{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:25px;
+}
+
+.box{
+  background:#111;
+  padding:30px;
+  border-radius:20px;
+  text-align:center;
+  border:1px solid #222;
+  transition:.3s;
+}
+
+.box:hover{ transform:translateY(-5px); }
+.box h3{ margin-bottom:10px; color:#00c6ff; }
+
+/* =========================
+   GALLERY
+========================= */
+.gallery{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:25px;
+}
+
+.gallery img{
+  width:100%;
+  border-radius:20px;
+  border:1px solid #222;
+  transition:.3s;
+}
+
+.gallery img:hover{ transform:scale(1.05); }
+
+/* =========================
+   PLANS / DIET
+========================= */
+.plans{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:25px;
+}
+
+.plan{
+  background:#111;
+  padding:35px 25px;
+  border-radius:22px;
+  text-align:center;
+  border:1px solid #222;
+}
+
+.plan h3{ color:#00c6ff; }
+.price{ font-size:2.2rem; margin:15px 0; }
+
+.plan.popular{
+  border:2px solid #00c6ff;
+  transform:scale(1.05);
+}
+
+/* =========================
+   FORMS / BMI
+========================= */
+.bmi-box,
+form{
+  max-width:420px;
+  margin:auto;
+  background:#111;
+  padding:30px;
+  border-radius:22px;
+  border:1px solid #222;
+  display:flex;
+  flex-direction:column;
+  gap:15px;
+}
+
+input, select{
+  padding:12px;
+  border-radius:12px;
+  border:none;
+  outline:none;
+}
+
+button{
+  padding:12px;
+  border-radius:25px;
+  border:none;
+  background:#00c6ff;
+  font-weight:600;
+  cursor:pointer;
+}
+
+/* =========================
+   DASHBOARD (ADMIN / TRAINER / MEMBER)
+========================= */
+.dashboard{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+  gap:30px;
+}
+
+.card{
+  background:#111;
+  padding:30px;
+  border-radius:22px;
+  border:1px solid #222;
+}
+
+.card h2{
+  font-size:1.6rem;
+  margin-bottom:15px;
+}
+
+/* =========================
+   MEMBER DASHBOARD (NEW)
+========================= */
+#memberDashboard{
+  margin-top:20px;
+  background:#0f1720;
+  padding:20px;
+  border-radius:18px;
+  border:1px solid #222;
+}
+
+#memberDashboard h3{
+  font-size:1.1rem;
+  margin-bottom:8px;
+  color:#00c6ff;
+}
+
+#feeStatusText{
+  font-weight:600;
+  margin-bottom:6px;
+}
+
+#memberAttendance{
+  list-style:none;
+  margin-top:10px;
+}
+
+#memberAttendance li{
+  padding:8px 10px;
+  border-bottom:1px solid #222;
+  font-size:.95rem;
+}
+
+/* =========================
+   OFFER POPUP
+========================= */
+.offer{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.85);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  z-index:999;
+}
+
+.offer-box{
+  background:#111;
+  padding:30px;
+  border-radius:22px;
+  text-align:center;
+  border:2px solid #00c6ff;
+  max-width:360px;
+}
+
+/* =========================
+   FOOTER
+========================= */
+footer{
+  text-align:center;
+  padding:25px;
+  background:#000;
+  font-size:.9rem;
+  color:#aaa;
+}
+
+/* =========================
+   FLOAT BUTTONS
+========================= */
+.float{
+  position:fixed;
+  right:15px;
+  bottom:20px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+
+.float a{
+  width:55px;
+  height:55px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#000;
+  font-weight:bold;
+  text-decoration:none;
+}
+
+.call{background:#00c6ff;}
+.whats{background:#25D366;}
+/* ===== ADMIN UI ===== */
+.admin-layout{
+  position:fixed;
+  inset:0;
+  background:#0b0b0b;
+  color:#fff;
+  display:flex;
+  z-index:9999;
+}
+
+.admin-sidebar{
+  width:220px;
+  background:#111;
+  padding:20px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+
+.admin-sidebar h2{
+  color:#00ffd5;
+}
+
+.admin-sidebar button{
+  background:#1c1c1c;
+  color:#fff;
+  border:none;
+  padding:12px;
+  border-radius:8px;
+  cursor:pointer;
+  text-align:left;
+}
+
+.admin-sidebar button:hover{
+  background:#00ffd5;
+  color:#000;
+}
+
+.admin-sidebar .logout{
+  margin-top:auto;
+  background:#ff4d4d;
+}
+
+.admin-main{
+  flex:1;
+  padding:30px;
+  overflow:auto;
+}
+
+.stat-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+  gap:20px;
+}
+
+.stat-card{
+  background:#1c1c1c;
+  padding:20px;
+  border-radius:12px;
+  text-align:center;
+}
+
+.stat-card p{
+  font-size:26px;
+  color:#00ffd5;
+  font-weight:700;
+}
+
+.member-table{
+  width:100%;
+  margin-top:20px;
+  border-collapse:collapse;
+}
+
+.member-table th,
+.member-table td{
+  padding:12px;
+  border-bottom:1px solid #333;
+}
+.badge{
+  padding:6px 10px;
+  border-radius:6px;
+  font-size:13px;
+  font-weight:600;
+}
+
+.badge.active{
+  background:#00ffd5;
+  color:#000;
+}
+
+.badge.expired{
+  background:#ff4d4d;
+  color:#fff;
+}
+.add-member-box{
+  background:#1c1c1c;
+  padding:20px;
+  border-radius:12px;
+  margin-bottom:25px;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+  gap:12px;
+}
+
+.add-member-box h3{
+  grid-column:1/-1;
+  margin-bottom:10px;
+  color:#00ffd5;
+}
+
+.add-member-box input,
+.add-member-box select{
+  padding:10px;
+  border-radius:6px;
+  border:none;
+}
+
+.add-member-box button{
+  grid-column:1/-1;
+  padding:12px;
+  border:none;
+  border-radius:8px;
+  background:#00ffd5;
+  color:#000;
+  font-weight:600;
+  cursor:pointer;
+}
+.member-panel{
+  padding:20px;
+  background:#111;
+  color:#fff;
+}
+
+.member-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.member-cards{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  gap:15px;
+  margin:20px 0;
+}
+
+.m-card{
+  background:#1c1c1c;
+  padding:15px;
+  border-radius:10px;
+  text-align:center;
+}
+
+.member-actions button{
+  margin:8px;
+  padding:10px 15px;
+  border:none;
+  border-radius:8px;
+  background:#00ffd5;
+  font-weight:600;
+  cursor:pointer;
+}
+
+.member-box{
+  margin-top:25px;
+  background:#1c1c1c;
+  padding:15px;
+  border-radius:10px;
+}
+.member-panel{
+  background:#0e0e0e;
+  color:#fff;
+  padding:20px;
+}
+
+.member-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.member-cards{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:15px;
+  margin:20px 0;
+}
+
+.m-card{
+  background:#1c1c1c;
+  padding:15px;
+  border-radius:10px;
+}
+
+.member-actions button{
+  margin:6px;
+  padding:10px 14px;
+  border:none;
+  border-radius:6px;
+  background:#00ffd5;
+  color:#000;
+  cursor:pointer;
+}
+
+.member-section{
+  margin-top:25px;
+}

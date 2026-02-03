@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Marking Attendance</title>
+</head>
+<body>
+
+<h2>📲 Marking Attendance...</h2>
+<p id="msg">Please wait</p>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyA86S_0IA435DB26Z2RHLQUMbDYFBzge4",
+  authDomain: "fir-square-fitness.firebaseapp.com",
+  projectId: "fir-square-fitness"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+const member = JSON.parse(localStorage.getItem("currentMember"));
+
+if(!member){
+  document.getElementById("msg").innerText =
+    "❌ Please login to member panel first";
+}else{
+  db.collection("attendance").add({
+    user: member.user,
+    date: new Date().toLocaleDateString(),
+    time: new Date().toLocaleTimeString()
+  }).then(()=>{
+    document.getElementById("msg").innerText =
+      "✅ Attendance marked successfully";
+  });
+}
+</script>
+
+</body>
+</html>

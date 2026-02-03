@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Scan for Attendance</title>
+  <style>
+    body{
+      font-family:Poppins, sans-serif;
+      background:#0b0b0b;
+      color:#fff;
+      text-align:center;
+      padding-top:40px;
+    }
+  </style>
+</head>
+<body>
+
+<h2>📷 Scan for Attendance</h2>
+<div id="qr"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
+<script>
+new QRCode(document.getElementById("qr"), {
+  text: "https://medicalbhumika96-netizen.github.io/s-square-fitness/mark.html",
+  width:220,
+  height:220
+});
+</script>
+
+<p>Scan this QR to mark attendance</p>
+
+</body>
+</html>
