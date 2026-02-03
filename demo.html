@@ -1,63 +1,132 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>QR Attendance</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<title>Scan QR for Attendance</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- QR Scanner lib -->
-  <script src="https://unpkg.com/html5-qrcode"></script>
+<!-- QR Scanner -->
+<script src="https://unpkg.com/html5-qrcode"></script>
 
-  <style>
-    body{
-      margin:0;
-      font-family:Poppins, sans-serif;
-      background:#0b132b;
-      color:#fff;
-      text-align:center;
-    }
-    h2{margin:20px 0}
-    #reader{
-      width:300px;
-      margin:auto;
-      border:4px solid #00e5ff;
-      border-radius:16px;
-      overflow:hidden;
-    }
-    .note{
-      margin-top:15px;
-      opacity:.8;
-      font-size:14px;
-    }
-  </style>
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+<style>
+  body{
+    margin:0;
+    min-height:100vh;
+    background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+    color:#fff;
+    font-family:Arial, sans-serif;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+  }
+  h2{margin-bottom:8px}
+  button{
+    padding:12px 22px;
+    font-size:16px;
+    border:none;
+    border-radius:8px;
+    background:#00e5ff;
+    color:#000;
+    cursor:pointer;
+    margin:15px 0;
+    font-weight:600;
+  }
+  #reader{
+    width:300px;
+    margin-top:15px;
+    display:none;
+  }
+  #status{
+    margin-top:15px;
+    font-size:14px;
+  }
+</style>
 </head>
 <body>
 
-<h2>📷 Scan QR for Attendance</h2>
+<h2>📸 Scan QR for Attendance</h2>
+<p>Gym QR scan karo, attendance auto mark ho jayegi</p>
+
+<button onclick="startScan()">Open Camera</button>
 
 <div id="reader"></div>
-
-<p class="note">Point camera at gym QR code</p>
+<p id="status"></p>
 
 <script>
-const qr = new Html5Qrcode("reader");
+/* ======================
+   FIREBASE INIT
+====================== */
+const firebaseConfig = {
+  apiKey: "AIzaSyA86S_0IA435DB26Z2RHLQUMbDYFBzge4",
+  authDomain: "fir-square-fitness.firebaseapp.com",
+  projectId: "fir-square-fitness"
+};
 
-qr.start(
-  { facingMode: "environment" }, // 🔥 BACK CAMERA
-  {
-    fps: 10,
-    qrbox: { width: 250, height: 250 } // 🔲 Scanner box
-  },
-  (decodedText) => {
-    alert("Attendance Marked ✅\n" + decodedText);
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 
-    // yaha tum Firestore attendance add kar sakte ho
-    qr.stop();
-  },
-  (err) => {
-    // silent scan errors
-  }
-);
+/* ======================
+   QR SCAN + ATTENDANCE
+====================== */
+let qr;
+
+function startScan(){
+  document.getElementById("reader").style.display = "block";
+  document.getElementById("status").innerText = "Opening camera...";
+
+  qr = new Html5Qrcode("reader");
+
+  Html5Qrcode.getCameras().then(async cameras => {
+    if(!cameras.length){
+      document.getElementById("status").innerText = "❌ No camera found";
+      return;
+    }
+
+    // 🔥 BACK CAMERA FORCE
+    const backCam =
+      cameras.find(c => c.label.toLowerCase().includes("back"))
+      || cameras[cameras.length - 1];
+
+    qr.start(
+      backCam.id,
+      { fps: 10, qrbox: 250 },
+      async () => {
+        qr.stop();
+
+        // 🔐 GET LOGGED MEMBER
+        const currentMember =
+          JSON.parse(localStorage.getItem("currentMember"));
+
+        if(!currentMember){
+          document.getElementById("status").innerText =
+            "❌ Please login in member panel first";
+          return;
+        }
+
+        // ✅ SAVE ATTENDANCE (YEHI LINE TUM PUCH RAHE THE)
+        await db.collection("attendance").add({
+          user: currentMember.user,
+          name: currentMember.name,
+          time: new Date(),
+          method: "QR"
+        });
+
+        document.getElementById("status").innerText =
+          "✅ Attendance marked successfully";
+      },
+      () => {}
+    );
+  }).catch(err=>{
+    document.getElementById("status").innerText =
+      "Camera error: " + err;
+  });
+}
 </script>
 
 </body>
