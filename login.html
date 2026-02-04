@@ -1,0 +1,53 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>Member Login</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="text-align:center">
+
+<h2>🔐 Member Login</h2>
+
+<input id="mid" placeholder="Member ID"><br><br>
+<input id="pass" type="password" placeholder="Password"><br><br>
+<button onclick="login()">Confirm Attendance</button>
+
+<p id="msg"></p>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+<script>
+firebase.initializeApp({
+  apiKey: "YOUR_KEY",
+  authDomain: "YOUR_DOMAIN",
+  projectId: "YOUR_PROJECT"
+});
+const db = firebase.firestore();
+
+async function login(){
+  const id = mid.value.trim();
+  const pw = pass.value.trim();
+
+  const doc = await db.collection("members").doc(id).get();
+
+  if(!doc.exists || doc.data().password !== pw){
+    msg.innerText = "❌ Invalid login";
+    return;
+  }
+
+  // ✅ MARK ATTENDANCE
+  await db.collection("attendance").add({
+    user: id,
+    name: doc.data().name,
+    time: new Date(),
+    method: "QR + Login"
+  });
+
+  msg.innerText = "✅ Attendance Marked";
+}
+</script>
+
+</body>
+</html>

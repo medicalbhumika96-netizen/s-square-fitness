@@ -1,75 +1,26 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>QR Attendance</title>
-
+<title>Scan QR</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script src="https://unpkg.com/html5-qrcode"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-
-<style>
-body{
-  background:#0b0b0b;
-  color:#fff;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  min-height:100vh;
-  font-family:Poppins;
-  text-align:center;
-}
-#reader{width:300px}
-</style>
 </head>
-<body>
+<body style="text-align:center">
 
-<div>
-  <h2>📸 Scan QR</h2>
-  <p id="msg">Opening camera...</p>
-  <div id="reader"></div>
-</div>
+<h2>📸 Scan Gym QR</h2>
+<div id="reader" style="width:300px;margin:auto"></div>
+<p id="msg"></p>
 
 <script>
-/* 🔥 FIREBASE */
-firebase.initializeApp({
-  apiKey: "AIzaSyA86S_0IA435DB26Z2RHLQUMbDYFBzge4",
-  authDomain: "fir-square-fitness.firebaseapp.com",
-  projectId: "fir-square-fitness"
-});
-const db = firebase.firestore();
-
-/* 🔒 LOGIN CHECK */
-const session = JSON.parse(localStorage.getItem("memberSession"));
-if(!session){
-  document.getElementById("msg").innerText =
-    "❌ Please login from gym website first";
-  throw "NO SESSION";
-}
-
-/* 📷 QR SCAN */
 const qr = new Html5Qrcode("reader");
 
-Html5Qrcode.getCameras().then(devices=>{
-  const backCam = devices.find(d =>
-    d.label.toLowerCase().includes("back")
-  ) || devices[0];
-
+Html5Qrcode.getCameras().then(cameras=>{
   qr.start(
-    backCam.id,
+    cameras.find(c=>c.label.toLowerCase().includes("back"))?.id || cameras[0].id,
     { fps:10, qrbox:250 },
-    async ()=>{
+    ()=>{
       qr.stop();
-
-      await db.collection("attendance").add({
-        user: session.user,
-        name: session.name,
-        time: new Date(),
-        method: "QR"
-      });
-
-      document.getElementById("msg").innerText =
-        "✅ Attendance marked successfully";
+      window.location.href = "login.html?from=qr";
     }
   );
 });
@@ -77,3 +28,4 @@ Html5Qrcode.getCameras().then(devices=>{
 
 </body>
 </html>
+  
