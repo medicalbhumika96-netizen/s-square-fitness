@@ -1,120 +1,78 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<title>Scan QR for Attendance</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>QR Attendance</title>
 
 <script src="https://unpkg.com/html5-qrcode"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
 <style>
-  body{
-    margin:0;
-    min-height:100vh;
-    background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
-    color:#fff;
-    font-family:Arial, sans-serif;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-  }
-  h2{margin-bottom:10px}
-  button{
-    padding:12px 20px;
-    font-size:16px;
-    border:none;
-    border-radius:8px;
-    background:#00e5ff;
-    color:#000;
-    cursor:pointer;
-    margin-bottom:20px;
-  }
-  #reader{
-    width:300px;
-    display:none;
-  }
-  #status{
-    margin-top:15px;
-    font-size:14px;
-  }
-  #reader{
-  width:100%;
-  max-width:320px;
-  margin:auto;
-  border-radius:12px;
-  overflow:hidden;
+body{
+  background:#0b0b0b;
+  color:#fff;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  min-height:100vh;
+  font-family:Poppins;
+  text-align:center;
 }
-
+#reader{width:300px}
 </style>
 </head>
 <body>
 
-<h2>📸 Scan QR for Attendance</h2>
-<p>Tap button to open camera</p>
-
-<button onclick="startScan()">Open Camera</button>
-
-<div id="reader"></div>
-<p id="status"></p>
+<div>
+  <h2>📸 Scan QR</h2>
+  <p id="msg">Opening camera...</p>
+  <div id="reader"></div>
+</div>
 
 <script>
+/* 🔥 FIREBASE */
+firebase.initializeApp({
+  apiKey: "AIzaSyA86S_0IA435DB26Z2RHLQUMbDYFBzge4",
+  authDomain: "fir-square-fitness.firebaseapp.com",
+  projectId: "fir-square-fitness"
+});
+const db = firebase.firestore();
 
-function isMobile(){
-  return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+/* 🔒 LOGIN CHECK */
+const session = JSON.parse(localStorage.getItem("memberSession"));
+if(!session){
+  document.getElementById("msg").innerText =
+    "❌ Please login from gym website first";
+  throw "NO SESSION";
 }
 
-window.onload = () => {
-  if(!isMobile()){
-    document.body.innerHTML = `
-      <div style="
-        height:100vh;
-        display:flex;
-        flex-direction:column;
-        justify-content:center;
-        align-items:center;
-        background:#0b0b0b;
-        color:#fff;
-        text-align:center;
-        padding:20px;">
-        <h2>🚫 Mobile Required</h2>
-        <p style="margin-top:10px;color:#ccc">
-          QR attendance can only be marked from a mobile phone.
-        </p>
-      </div>
-    `;
-  }
-};
-  
-let qr;
+/* 📷 QR SCAN */
+const qr = new Html5Qrcode("reader");
 
-function startScan(){
-  document.getElementById("reader").style.display = "block";
-  document.getElementById("status").innerText = "Opening camera...";
+Html5Qrcode.getCameras().then(devices=>{
+  const backCam = devices.find(d =>
+    d.label.toLowerCase().includes("back")
+  ) || devices[0];
 
-  qr = new Html5Qrcode("reader");
+  qr.start(
+    backCam.id,
+    { fps:10, qrbox:250 },
+    async ()=>{
+      qr.stop();
 
-  Html5Qrcode.getCameras().then(cameras => {
-    if(!cameras.length){
-      document.getElementById("status").innerText = "No camera found";
-      return;
+      await db.collection("attendance").add({
+        user: session.user,
+        name: session.name,
+        time: new Date(),
+        method: "QR"
+      });
+
+      document.getElementById("msg").innerText =
+        "✅ Attendance marked successfully";
     }
-
-    qr.start(
-      cameras[0].id,
-      { fps:10, qrbox:250 },
-      text => {
-        document.getElementById("status").innerText = "QR Scanned ✔";
-        qr.stop();
-        window.location.href = text;
-      },
-      err => {}
-    );
-  }).catch(err=>{
-    document.getElementById("status").innerText =
-      "Camera error: " + err;
-  });
-}
+  );
+});
 </script>
 
 </body>
