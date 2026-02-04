@@ -99,7 +99,8 @@ async function confirmAttendance(){
       return;
     }
 
-    const today = new Date().toLocaleDateString();
+    const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
+
 
     // ❌ Prevent duplicate attendance
     const already = await db.collection("attendance")

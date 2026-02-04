@@ -153,7 +153,8 @@ async function confirmAttendance(memberId, password) {
     return;
   }
 
-  const today = new Date().toLocaleDateString();
+  const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
+
 
   // 🔒 Duplicate block
   const check = await db
@@ -184,34 +185,40 @@ async function confirmAttendance(memberId, password) {
   ADMIN ATTENDANCE TABLE
 ************************/
 async function loadAttendance() {
-  attendanceTable.innerHTML = "";
+  const table = document.getElementById("attendanceTable");
+  table.innerHTML = "<tr><td colspan='5'>Loading...</td></tr>";
 
-  let query = db.collection("attendance").orderBy("created", "desc");
+  const date = document.getElementById("attDate").value;
+  const method = document.getElementById("attMethod").value;
 
-  const date = attDate.value;
-  const method = attMethod.value;
+  let query = db.collection("attendance");
 
-  if (date) query = query.where("date", "==", new Date(date).toLocaleDateString());
-  if (method) query = query.where("method", "==", method);
+  if (date) {
+    query = query.where("date", "==", date);
+  }
+  if (method) {
+    query = query.where("method", "==", method);
+  }
 
-  const snap = await query.get();
+  const snap = await query.orderBy("created", "desc").get();
 
   if (snap.empty) {
-    attendanceTable.innerHTML =
-      "<tr><td colspan='5'>No records</td></tr>";
+    table.innerHTML = "<tr><td colspan='5'>No records</td></tr>";
     return;
   }
 
-  snap.forEach((d) => {
-    const a = d.data();
-    attendanceTable.innerHTML += `
+  table.innerHTML = "";
+  snap.forEach(doc => {
+    const d = doc.data();
+    table.innerHTML += `
       <tr>
-        <td>${a.memberId}</td>
-        <td>${a.name}</td>
-        <td>${a.date}</td>
-        <td>${a.time}</td>
-        <td>${a.method}</td>
-      </tr>`;
+        <td>${d.memberId}</td>
+        <td>${d.name}</td>
+        <td>${d.date}</td>
+        <td>${d.time}</td>
+        <td>${d.method}</td>
+      </tr>
+    `;
   });
 }
 
