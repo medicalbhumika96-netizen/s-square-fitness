@@ -340,6 +340,49 @@ function loadDemoAttendance(){
 }
 loadDemoAttendance();
 
+
+async function loadAttendance(){
+  const table = document.getElementById("attendanceTable");
+  table.innerHTML = "<tr><td colspan='5'>Loading...</td></tr>";
+
+  let query = db.collection("attendance").orderBy("time","desc");
+
+  const dateVal = document.getElementById("attDate")?.value;
+  const methodVal = document.getElementById("attMethod")?.value;
+
+  const snap = await query.get();
+  table.innerHTML = "";
+
+  snap.forEach(doc=>{
+    const d = doc.data();
+
+    const dateObj = d.time.toDate();
+    const dateStr = dateObj.toLocaleDateString();
+    const timeStr = dateObj.toLocaleTimeString();
+
+    if(dateVal && dateStr !== new Date(dateVal).toLocaleDateString()) return;
+    if(methodVal && d.method !== methodVal) return;
+
+    table.innerHTML += `
+      <tr>
+        <td>${d.user}</td>
+        <td>${d.name}</td>
+        <td>${dateStr}</td>
+        <td>${timeStr}</td>
+        <td>
+          <span class="badge ${d.method === "QR" ? "active" : "expired"}">
+            ${d.method}
+          </span>
+        </td>
+      </tr>
+    `;
+  });
+
+  if(table.innerHTML === ""){
+    table.innerHTML = "<tr><td colspan='5'>No records found</td></tr>";
+  }
+}
+
 /* ======================
    LOGOUT
 ====================== */
