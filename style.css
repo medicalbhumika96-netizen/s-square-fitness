@@ -503,3 +503,14 @@ footer{
 .member-section{
   margin-top:25px;
 }
+.attendance-filters{
+  display:flex;
+  gap:10px;
+  margin-bottom:15px;
+}
+.attendance-filters input,
+.attendance-filters select,
+.attendance-filters button{
+  padding:8px;
+  border-radius:6px;
+}
