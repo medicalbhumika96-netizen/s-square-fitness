@@ -25,27 +25,17 @@
   <div class="container">
     <h2>Why Choose Us</h2>
     <div class="features">
-      <div class="box">
-        <h3>Modern Equipment</h3>
-        <p>Latest machines for strength & cardio training.</p>
-      </div>
-      <div class="box">
-        <h3>Certified Trainers</h3>
-        <p>Professional guidance for best results.</p>
-      </div>
-      <div class="box">
-        <h3>Clean & Premium</h3>
-        <p>Hygienic, air-conditioned workout space.</p>
-      </div>
+      <div class="box"><h3>Modern Equipment</h3></div>
+      <div class="box"><h3>Certified Trainers</h3></div>
+      <div class="box"><h3>Clean & Premium</h3></div>
     </div>
   </div>
 </section>
 
-<!-- ================= DASHBOARD SYSTEM ================= -->
+<!-- ================= LOGIN ================= -->
 <section class="section-panel">
   <div class="container dashboard">
 
-    <!-- MEMBER LOGIN -->
     <div class="card" id="memberCard">
       <h2>Member Login</h2>
       <input id="memberUser" placeholder="Member ID">
@@ -54,7 +44,6 @@
       <p id="memberMsg"></p>
     </div>
 
-    <!-- ADMIN LOGIN -->
     <div class="card" id="adminLoginCard">
       <h2>Admin Login</h2>
       <input id="adminPass" type="password" placeholder="Admin Password">
@@ -72,10 +61,13 @@
     <h2>S Square</h2>
     <button onclick="showAdminTab('dashboard')">📊 Dashboard</button>
     <button onclick="showAdminTab('members')">👥 Members</button>
+    <button onclick="showAdminTab('attendance')">🧾 Attendance</button>
     <button onclick="adminLogout()" class="logout">🚪 Logout</button>
   </aside>
 
   <main class="admin-main">
+
+    <!-- DASHBOARD -->
     <div class="admin-tab" id="dashboardTab">
       <h2>Admin Dashboard</h2>
       <div class="stat-grid">
@@ -85,6 +77,7 @@
       </div>
     </div>
 
+    <!-- MEMBERS -->
     <div class="admin-tab" id="membersTab" style="display:none">
       <h2>Member Management</h2>
 
@@ -112,20 +105,47 @@
       <table class="member-table">
         <thead>
           <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Trainer</th>
-            <th>Expiry</th>
-            <th>Action</th>
+            <th>ID</th><th>Name</th><th>Trainer</th><th>Expiry</th><th>Action</th>
           </tr>
         </thead>
         <tbody id="memberTable"></tbody>
       </table>
     </div>
+
+    <!-- ✅ ATTENDANCE -->
+    <div class="admin-tab" id="attendanceTab" style="display:none">
+      <h2>📋 Attendance Records</h2>
+
+      <div class="attendance-filters">
+        <input type="date" id="attDate">
+        <select id="attMethod">
+          <option value="">All</option>
+          <option value="QR">QR Scan</option>
+          <option value="Manual">Manual</option>
+        </select>
+        <button onclick="loadAttendance()">Filter</button>
+      </div>
+
+      <table class="member-table">
+        <thead>
+          <tr>
+            <th>Member ID</th>
+            <th>Name</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Method</th>
+          </tr>
+        </thead>
+        <tbody id="attendanceTable">
+          <tr><td colspan="5">No data</td></tr>
+        </tbody>
+      </table>
+    </div>
+
   </main>
 </section>
 
-<!-- ================= MEMBER PANEL (ADMIN STYLE) ================= -->
+<!-- ================= MEMBER PANEL ================= -->
 <section class="member-layout" id="memberSection" style="display:none">
 
   <aside class="member-sidebar">
@@ -135,72 +155,49 @@
     <button onclick="showMemberTab('progress')">📊 Progress</button>
     <button onclick="renewFee()">💳 Renew Fee</button>
     <button onclick="chatTrainer()">💬 Support</button>
-    <button onclick="openDiet()">🥗 View Diet Plan</button>
-
-    <button class="logout" onclick="memberLogout()">🚪 Logout</button>
+    <button onclick="memberLogout()" class="logout">🚪 Logout</button>
   </aside>
 
   <main class="member-main">
 
-   <div class="member-tab" id="mdashboard">
-  <h2>Welcome, <span id="memberName"></span></h2>
+    <div class="member-tab" id="mdashboard">
+      <h2>Welcome, <span id="memberName"></span></h2>
 
-  <div class="stat-grid">
-    <div class="stat-card">
-      <h4>Fee Status</h4>
-      <p id="mFeeStatus"></p>
-      <small id="mExpiry"></small>
+      <div class="stat-grid">
+        <div class="stat-card">
+          <h4>Fee Status</h4>
+          <p id="mFeeStatus"></p>
+          <small id="mExpiry"></small>
+        </div>
+        <div class="stat-card">
+          <h4>Attendance</h4>
+          <p id="mAttendance">0%</p>
+        </div>
+      </div>
+
+      <canvas id="attendanceChart"></canvas>
     </div>
-    <div class="stat-card">
-      <h4>Attendance</h4>
-      <p id="mAttendance">0%</p>
-    </div>
-  </div>
-
-  <!-- ✅ Attendance Chart INSIDE dashboard -->
-  <div id="attendanceChartBox" style="margin-top:30px">
-    <h3>📊 Attendance Overview</h3>
-    <canvas id="attendanceChart"></canvas>
-  </div>
-</div>
-
 
     <div class="member-tab" id="workout" style="display:none">
       <h2>Workout Plan</h2>
-      <ul id="workoutList">
-        <li>Monday – Chest</li>
-        <li>Tuesday – Back</li>
-        <li>Wednesday – Legs</li>
-      </ul>
+      <ul><li>Chest</li><li>Back</li><li>Legs</li></ul>
     </div>
 
     <div class="member-tab" id="progress" style="display:none">
       <h2>Weight Progress</h2>
-      <input id="weightInput" type="number" placeholder="Enter weight (kg)">
+      <input id="weightInput" type="number">
       <button onclick="addWeight()">Add</button>
       <ul id="weightList"></ul>
     </div>
 
   </main>
- 
-
 </section>
-
 
 <footer>© 2026 S Square Fitness Talegaon</footer>
 
-<!-- FLOAT -->
-<div class="float">
-  <a href="tel:8003929804" class="call">📞</a>
-  <a href="https://wa.me/918003929804" class="whats">💬</a>
-</div>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<!-- FIREBASE -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-
-<!-- MAIN SCRIPT -->
 <script src="script.js"></script>
 
 </body>
