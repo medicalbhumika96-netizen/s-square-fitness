@@ -26,31 +26,24 @@ body{
   text-align:center;
   box-shadow:0 0 25px rgba(0,255,255,.25);
 }
-h2{margin-bottom:10px}
 input{
   width:100%;
   padding:12px;
   margin:10px 0;
   border-radius:8px;
   border:none;
-  font-size:15px;
 }
 button{
   width:100%;
   padding:12px;
-  margin-top:10px;
   border:none;
   border-radius:8px;
   background:#00e5ff;
   color:#000;
   font-weight:600;
-  font-size:16px;
   cursor:pointer;
 }
-#msg{
-  margin-top:12px;
-  font-size:14px;
-}
+#msg{margin-top:12px;font-size:14px}
 .success{color:#00ff99}
 .error{color:#ff5c5c}
 </style>
@@ -65,8 +58,7 @@ button{
   <input id="attUser" placeholder="Member ID">
   <input id="attPass" type="password" placeholder="Password">
 
-  <button onclick="confirm()">Confirm Attendance</button>
-
+  <button onclick="confirmAttendance()">Confirm Attendance</button>
   <div id="msg"></div>
 </div>
 
@@ -75,16 +67,21 @@ button{
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
 <script>
-/* 🔥 SAME CONFIG AS MAIN SITE */
-firebase.initializeApp({
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID"
-});
+/* 🔥 FIREBASE INIT (THIS WAS MISSING) */
+const firebaseConfig = {
+  apiKey: "AIzaSyA86S_0I4A35DB26Z2RHL0QUMbDYFBzge4",
+  authDomain: "fir-square-fitness.firebaseapp.com",
+  projectId: "fir-square-fitness",
+  storageBucket: "fir-square-fitness.firebasestorage.app",
+  messagingSenderId: "1046572126467",
+  appId: "1:1046572126467:web:f1ef5423b6dce3102dd936"
+};
 
+firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-async function confirm(){
+/* ✅ CONFIRM ATTENDANCE LOGIC */
+async function confirmAttendance(){
   const id = attUser.value.trim();
   const pass = attPass.value.trim();
   msg.innerHTML = "Checking...";
@@ -94,36 +91,43 @@ async function confirm(){
     return;
   }
 
-  const doc = await db.collection("members").doc(id).get();
-  if(!doc.exists || doc.data().password !== pass){
-    msg.innerHTML = "<span class='error'>Invalid login</span>";
-    return;
+  try{
+    const doc = await db.collection("members").doc(id).get();
+
+    if(!doc.exists || doc.data().password !== pass){
+      msg.innerHTML = "<span class='error'>Invalid login</span>";
+      return;
+    }
+
+    const today = new Date().toLocaleDateString();
+
+    // ❌ Prevent duplicate attendance
+    const already = await db.collection("attendance")
+      .where("memberId","==",id)
+      .where("date","==",today)
+      .get();
+
+    if(!already.empty){
+      msg.innerHTML = "<span class='error'>Attendance already marked</span>";
+      return;
+    }
+
+    // ✅ Save attendance
+    await db.collection("attendance").add({
+      memberId: id,
+      name: doc.data().name,
+      date: today,
+      time: new Date().toLocaleTimeString(),
+      method: "QR",
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+
+    msg.innerHTML = "<span class='success'>Attendance Marked ✅</span>";
+
+  }catch(err){
+    console.error(err);
+    msg.innerHTML = "<span class='error'>Network / Permission error</span>";
   }
-
-  const today = new Date().toLocaleDateString();
-
-  // ❌ Duplicate block
-  const already = await db.collection("attendance")
-    .where("memberId","==",id)
-    .where("date","==",today)
-    .get();
-
-  if(!already.empty){
-    msg.innerHTML = "<span class='error'>Attendance already marked</span>";
-    return;
-  }
-
-  // ✅ Save attendance
-  await db.collection("attendance").add({
-    memberId:id,
-    name:doc.data().name,
-    date:today,
-    time:new Date().toLocaleTimeString(),
-    method:"QR",
-    created: firebase.firestore.FieldValue.serverTimestamp()
-  });
-
-  msg.innerHTML = "<span class='success'>Attendance Marked ✅</span>";
 }
 </script>
 
