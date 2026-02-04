@@ -1,256 +1,96 @@
-/* ======================
-   FIREBASE INIT
-====================== */
+/***********************
+  🔥 FIREBASE CONFIG
+************************/
 const firebaseConfig = {
-  apiKey: "AIzaSyA86S_0IA435DB26Z2RHLQUMbDYFBzge4",
-  authDomain: "fir-square-fitness.firebaseapp.com",
-  projectId: "fir-square-fitness",
-  storageBucket: "fir-square-fitness.firebasestorage.app",
-  messagingSenderId: "1046572126467",
-  appId: "1:1046572126467:web:f1ef5423b6dce3102dd936"
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
 };
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-/* ======================
-   GLOBAL STATE
-====================== */
-let members = [];
+/***********************
+  GLOBAL STATE
+************************/
 let currentMember = null;
-let attendanceChart = null;
+let adminLoggedIn = false;
 
-/* ======================
-   BMI
-====================== */
-function calcBMI(){
-  const w = +weight.value;
-  const h = +height.value / 100;
-  if(!w || !h){
-    bmiResult.innerText = "Enter valid values";
-    return;
-  }
-  const bmi = (w / (h*h)).toFixed(1);
-  const status =
-    bmi < 18.5 ? "Underweight" :
-    bmi < 25 ? "Normal" :
-    bmi < 30 ? "Overweight" : "Obese";
-  bmiResult.innerText = `BMI: ${bmi} (${status})`;
-}
-
-/* ======================
-   JOIN FORM
-====================== */
-function customerJoin(){
-  const msg =
-`New Gym Enquiry
-Name: ${name.value}
-Phone: ${phone.value}
-Plan: ${plan.value}`;
-
-  window.open(
-    `https://wa.me/918003929804?text=${encodeURIComponent(msg)}`,
-    "_blank"
-  );
-}
-
-/* ======================
-   MEMBER LOGIN
-====================== */
-async function memberLogin(){
+/***********************
+  MEMBER LOGIN
+************************/
+async function memberLogin() {
+  const user = memberUser.value.trim();
+  const pass = memberPass.value.trim();
   memberMsg.innerText = "Checking...";
 
-  const id = memberUser.value.trim();
-  const pass = memberPass.value.trim();
-
-  if(!id || !pass){
+  if (!user || !pass) {
     memberMsg.innerText = "Enter ID & Password";
     return;
   }
 
-  try{
-    const doc = await db.collection("members").doc(id).get();
-
-    if(!doc.exists || doc.data().password !== pass){
-      memberMsg.innerText = "Invalid login";
-      return;
-    }
-
-    currentMember = { user:id, ...doc.data() };
-    localStorage.setItem("currentMember", JSON.stringify(currentMember));
-
-    // Hide public & login
-    document.getElementById("publicSite").style.display = "none";
-    document.querySelector(".section-panel").style.display = "none";
-    document.getElementById("adminSection").style.display = "none";
-
-    // Show member panel
-    document.getElementById("memberSection").style.display = "flex";
-
-    loadMemberDashboard();
-    showMemberTab("mdashboard");
-
-  }catch(err){
-    console.error(err);
-    memberMsg.innerText = "Login error";
-  }
-}
-
-/* ======================
-   MEMBER DASHBOARD
-====================== */
-async function loadMemberDashboard(){
-  memberName.innerText = currentMember.name;
-  mExpiry.innerText = "Valid till: " + currentMember.expiry;
-
-  const active = new Date(currentMember.expiry) >= new Date();
-  mFeeStatus.innerText = active ? "🟢 Active" : "🔴 Expired";
-
-  const snap = await db.collection("attendance")
-    .where("user","==",currentMember.user)
-    .get();
-
-  const percent = snap.size === 0 ? 0 : Math.min(100, snap.size * 4);
-  mAttendance.innerText = percent + "%";
-
-  renderAttendanceChart();
-}
-
-/* ======================
-   MEMBER TABS
-====================== */
-function showMemberTab(tab){
-  document.querySelectorAll(".member-tab").forEach(t=>{
-    t.style.display = "none";
-  });
-  document.getElementById(tab).style.display = "block";
-}
-
-/* ======================
-   ATTENDANCE CHART
-====================== */
-async function renderAttendanceChart(){
-  const canvas = document.getElementById("attendanceChart");
-  if(!canvas) return;
-
-  const snap = await db.collection("attendance")
-    .where("user","==",currentMember.user)
-    .get();
-
-  const map = {};
-  snap.forEach(d=>{
-    const date = d.data().date;
-    map[date] = (map[date] || 0) + 1;
-  });
-
-  if(attendanceChart) attendanceChart.destroy();
-
-  attendanceChart = new Chart(canvas,{
-    type:"bar",
-    data:{
-      labels:Object.keys(map),
-      datasets:[{
-        label:"Days Present",
-        data:Object.values(map),
-        backgroundColor:"#00ffd5"
-      }]
-    }
-  });
-}
-
-/* ======================
-   RENEW FEE
-====================== */
-function renewFee(){
-  const msg =
-`Hello 👋
-I want to renew my gym membership.
-
-Member ID: ${currentMember.user}
-Plan: ${currentMember.plan}
-Expiry: ${currentMember.expiry}`;
-
-  window.open(
-    `https://wa.me/918003929804?text=${encodeURIComponent(msg)}`,
-    "_blank"
-  );
-}
-
-/* ======================
-   CHAT TRAINER
-====================== */
-function chatTrainer(){
-  window.open(
-    "https://wa.me/918003929804?text=Hi Trainer, I need guidance",
-    "_blank"
-  );
-}
-
-/* ======================
-   DIET PLAN (ADMIN UPLOAD → MEMBER VIEW)
-====================== */
-async function openDiet(){
-  const doc = await db.collection("dietPlans")
-    .doc(currentMember.user).get();
-
-  if(!doc.exists){
-    alert("Diet plan not assigned");
+  const doc = await db.collection("members").doc(user).get();
+  if (!doc.exists || doc.data().password !== pass) {
+    memberMsg.innerText = "Invalid login";
     return;
   }
-  window.open(doc.data().pdfUrl,"_blank");
+
+  currentMember = { id: user, ...doc.data() };
+
+  memberSection.style.display = "flex";
+  publicSite.style.display = "none";
+  memberCard.style.display = "none";
+  adminLoginCard.style.display = "none";
+
+  memberName.innerText = currentMember.name;
+  mExpiry.innerText = "Expiry: " + currentMember.expiry;
+  mFeeStatus.innerText =
+    new Date(currentMember.expiry) >= new Date()
+      ? "Active"
+      : "Expired";
+
+  loadMemberAttendance();
 }
 
-/* ======================
-   ADMIN LOGIN
-====================== */
-function adminLoginUI(){
-  if(adminPass.value !== "admin123"){
+/***********************
+  ADMIN LOGIN
+************************/
+function adminLoginUI() {
+  if (adminPass.value !== "admin123") {
     adminLoginMsg.innerText = "Wrong password";
     return;
   }
 
-  document.getElementById("publicSite").style.display = "none";
-  document.querySelector(".section-panel").style.display = "none";
-
+  adminLoggedIn = true;
   adminSection.style.display = "flex";
-  showAdminTab("dashboard");
+  publicSite.style.display = "none";
+  memberCard.style.display = "none";
+  adminLoginCard.style.display = "none";
 
-  loadMembersFromDB();
+  loadDashboard();
+  loadMembers();
 }
 
-/* ======================
-   ADMIN TABS
-====================== */
-function showAdminTab(tab){
-  ["dashboard","members"].forEach(t=>{
-    document.getElementById(t+"Tab").style.display =
-      t === tab ? "block" : "none";
-  });
+/***********************
+  ADMIN NAVIGATION
+************************/
+function showAdminTab(tab) {
+  document
+    .querySelectorAll(".admin-tab")
+    .forEach((t) => (t.style.display = "none"));
+
+  if (tab === "dashboard") dashboardTab.style.display = "block";
+  if (tab === "members") membersTab.style.display = "block";
+  if (tab === "attendance") attendanceTab.style.display = "block";
+
+  if (tab === "attendance") loadAttendance();
 }
 
-/* ======================
-   LOAD MEMBERS
-====================== */
-async function loadMembersFromDB(){
-  members = [];
-  const snap = await db.collection("members").get();
-  snap.forEach(doc=>{
-    members.push({ user: doc.id, ...doc.data() });
-  });
-  renderMemberTable();
-  updateAnalytics();
-}
-
-/* ======================
-   ADD MEMBER
-====================== */
-async function addMember(e){
+/***********************
+  ADD MEMBER
+************************/
+async function addMember(e) {
   e.preventDefault();
-
-  if(!mUser.value || !mName.value || !mPass.value || !mExpiry.value){
-    adminMsg.innerText = "Fill all fields";
-    return;
-  }
 
   await db.collection("members").doc(mUser.value).set({
     name: mName.value,
@@ -258,136 +98,142 @@ async function addMember(e){
     expiry: mExpiry.value,
     trainer: mTrainer.value,
     plan: mPlan.value,
-    createdAt: firebase.firestore.FieldValue.serverTimestamp()
   });
 
-  adminMsg.innerText = "✅ Member added";
-  mUser.value = mName.value = mPass.value = mExpiry.value = "";
-
-  loadMembersFromDB();
+  adminMsg.innerText = "Member Added";
+  loadMembers();
 }
 
-/* ======================
-   MEMBER TABLE
-====================== */
-function renderMemberTable(){
+/***********************
+  LOAD MEMBERS
+************************/
+async function loadMembers() {
   memberTable.innerHTML = "";
+  const snap = await db.collection("members").get();
 
-  members.forEach(m=>{
-    const expired = new Date(m.expiry) < new Date();
-
+  snap.forEach((doc) => {
+    const m = doc.data();
     memberTable.innerHTML += `
       <tr>
-        <td>${m.user}</td>
+        <td>${doc.id}</td>
         <td>${m.name}</td>
         <td>${m.trainer}</td>
-        <td>
-          <span class="badge ${expired?'expired':'active'}">
-            ${m.expiry}
-          </span>
-        </td>
-        <td>
-          <button onclick="manualReminder('${m.user}')">📲</button>
-          <button onclick="deleteMember('${m.user}')">❌</button>
-        </td>
-      </tr>
-    `;
+        <td>${m.expiry}</td>
+        <td>-</td>
+      </tr>`;
   });
 }
 
-/* ======================
-   REMINDER
-====================== */
-function manualReminder(id){
-  const m = members.find(x=>x.user===id);
-  if(!m) return;
+/***********************
+  DASHBOARD STATS
+************************/
+async function loadDashboard() {
+  const snap = await db.collection("members").get();
+  totalMembers.innerText = snap.size;
 
-  const msg =
-`Hello ${m.name} 👋
-Your gym membership expires on ${m.expiry}.
-Please renew your fees 💪`;
-
-  window.open(
-    `https://wa.me/918003929804?text=${encodeURIComponent(msg)}`,
-    "_blank"
+  let active = 0,
+    expired = 0;
+  snap.forEach((d) =>
+    new Date(d.data().expiry) >= new Date() ? active++ : expired++
   );
-}
 
-/* ======================
-   DELETE MEMBER
-====================== */
-async function deleteMember(id){
-  await db.collection("members").doc(id).delete();
-  loadMembersFromDB();
-}
-
-/* ======================
-   ANALYTICS
-====================== */
-function updateAnalytics(){
-  totalMembers.innerText = members.length;
-  const active = members.filter(
-    m => new Date(m.expiry) >= new Date()
-  ).length;
   activeFees.innerText = active;
-  expiredFees.innerText = members.length - active;
+  expiredFees.innerText = expired;
 }
 
-function loadDemoAttendance(){
-  const count = localStorage.getItem("attendance") || 0;
-  document.getElementById("mAttendance").innerText =
-    Math.min(100, count * 5) + "%";
+/***********************
+  🔥 QR / LOGIN ATTENDANCE
+************************/
+async function confirmAttendance(memberId, password) {
+  const memberRef = db.collection("members").doc(memberId);
+  const doc = await memberRef.get();
+
+  if (!doc.exists || doc.data().password !== password) {
+    alert("Invalid credentials");
+    return;
+  }
+
+  const today = new Date().toLocaleDateString();
+
+  // 🔒 Duplicate block
+  const check = await db
+    .collection("attendance")
+    .where("memberId", "==", memberId)
+    .where("date", "==", today)
+    .get();
+
+  if (!check.empty) {
+    alert("Attendance already marked today");
+    return;
+  }
+
+  // ✅ Save attendance
+  await db.collection("attendance").add({
+    memberId,
+    name: doc.data().name,
+    date: today,
+    time: new Date().toLocaleTimeString(),
+    method: "QR",
+    created: firebase.firestore.FieldValue.serverTimestamp(),
+  });
+
+  alert("Attendance marked successfully ✅");
 }
-loadDemoAttendance();
 
+/***********************
+  ADMIN ATTENDANCE TABLE
+************************/
+async function loadAttendance() {
+  attendanceTable.innerHTML = "";
 
-async function loadAttendance(){
-  const table = document.getElementById("attendanceTable");
-  table.innerHTML = "<tr><td colspan='5'>Loading...</td></tr>";
+  let query = db.collection("attendance").orderBy("created", "desc");
 
-  let query = db.collection("attendance").orderBy("time","desc");
+  const date = attDate.value;
+  const method = attMethod.value;
 
-  const dateVal = document.getElementById("attDate")?.value;
-  const methodVal = document.getElementById("attMethod")?.value;
+  if (date) query = query.where("date", "==", new Date(date).toLocaleDateString());
+  if (method) query = query.where("method", "==", method);
 
   const snap = await query.get();
-  table.innerHTML = "";
 
-  snap.forEach(doc=>{
-    const d = doc.data();
-
-    const dateObj = d.time.toDate();
-    const dateStr = dateObj.toLocaleDateString();
-    const timeStr = dateObj.toLocaleTimeString();
-
-    if(dateVal && dateStr !== new Date(dateVal).toLocaleDateString()) return;
-    if(methodVal && d.method !== methodVal) return;
-
-    table.innerHTML += `
-      <tr>
-        <td>${d.user}</td>
-        <td>${d.name}</td>
-        <td>${dateStr}</td>
-        <td>${timeStr}</td>
-        <td>
-          <span class="badge ${d.method === "QR" ? "active" : "expired"}">
-            ${d.method}
-          </span>
-        </td>
-      </tr>
-    `;
-  });
-
-  if(table.innerHTML === ""){
-    table.innerHTML = "<tr><td colspan='5'>No records found</td></tr>";
+  if (snap.empty) {
+    attendanceTable.innerHTML =
+      "<tr><td colspan='5'>No records</td></tr>";
+    return;
   }
+
+  snap.forEach((d) => {
+    const a = d.data();
+    attendanceTable.innerHTML += `
+      <tr>
+        <td>${a.memberId}</td>
+        <td>${a.name}</td>
+        <td>${a.date}</td>
+        <td>${a.time}</td>
+        <td>${a.method}</td>
+      </tr>`;
+  });
 }
 
-/* ======================
-   LOGOUT
-====================== */
-function memberLogout(){ 
-  localStorage.clear();
-  location.reload(); 
+/***********************
+  MEMBER ATTENDANCE %
+************************/
+async function loadMemberAttendance() {
+  const snap = await db
+    .collection("attendance")
+    .where("memberId", "==", currentMember.id)
+    .get();
+
+  mAttendance.innerText = snap.size + " days";
 }
-function adminLogout(){ location.reload(); }
+
+/***********************
+  LOGOUTS
+************************/
+function memberLogout() {
+  location.reload();
+}
+
+function adminLogout() {
+  location.reload();
+}

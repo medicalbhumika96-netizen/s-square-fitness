@@ -36,6 +36,7 @@
 <section class="section-panel">
   <div class="container dashboard">
 
+    <!-- MEMBER LOGIN -->
     <div class="card" id="memberCard">
       <h2>Member Login</h2>
       <input id="memberUser" placeholder="Member ID">
@@ -44,6 +45,7 @@
       <p id="memberMsg"></p>
     </div>
 
+    <!-- ADMIN LOGIN -->
     <div class="card" id="adminLoginCard">
       <h2>Admin Login</h2>
       <input id="adminPass" type="password" placeholder="Admin Password">
@@ -71,9 +73,9 @@
     <div class="admin-tab" id="dashboardTab">
       <h2>Admin Dashboard</h2>
       <div class="stat-grid">
-        <div class="stat-card"><h4>Total Members</h4><p id="totalMembers"></p></div>
-        <div class="stat-card"><h4>Active Fees</h4><p id="activeFees"></p></div>
-        <div class="stat-card"><h4>Expired Fees</h4><p id="expiredFees"></p></div>
+        <div class="stat-card"><h4>Total Members</h4><p id="totalMembers">0</p></div>
+        <div class="stat-card"><h4>Active Fees</h4><p id="activeFees">0</p></div>
+        <div class="stat-card"><h4>Expired Fees</h4><p id="expiredFees">0</p></div>
       </div>
     </div>
 
@@ -105,14 +107,18 @@
       <table class="member-table">
         <thead>
           <tr>
-            <th>ID</th><th>Name</th><th>Trainer</th><th>Expiry</th><th>Action</th>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Trainer</th>
+            <th>Expiry</th>
+            <th>Action</th>
           </tr>
         </thead>
         <tbody id="memberTable"></tbody>
       </table>
     </div>
 
-    <!-- ✅ ATTENDANCE -->
+    <!-- ================= ATTENDANCE ================= -->
     <div class="admin-tab" id="attendanceTab" style="display:none">
       <h2>📋 Attendance Records</h2>
 
@@ -137,7 +143,7 @@
           </tr>
         </thead>
         <tbody id="attendanceTable">
-          <tr><td colspan="5">No data</td></tr>
+          <tr><td colspan="5">No attendance yet</td></tr>
         </tbody>
       </table>
     </div>
@@ -180,7 +186,11 @@
 
     <div class="member-tab" id="workout" style="display:none">
       <h2>Workout Plan</h2>
-      <ul><li>Chest</li><li>Back</li><li>Legs</li></ul>
+      <ul>
+        <li>Chest</li>
+        <li>Back</li>
+        <li>Legs</li>
+      </ul>
     </div>
 
     <div class="member-tab" id="progress" style="display:none">
@@ -195,9 +205,12 @@
 
 <footer>© 2026 S Square Fitness Talegaon</footer>
 
+<!-- LIBS -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+<!-- MAIN LOGIC -->
 <script src="script.js"></script>
 
 </body>

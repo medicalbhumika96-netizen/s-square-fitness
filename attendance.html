@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Confirm Attendance | S Square Fitness</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+body{
+  margin:0;
+  min-height:100vh;
+  background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+  font-family:Poppins,sans-serif;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#fff;
+}
+.card{
+  width:320px;
+  background:#111;
+  padding:25px;
+  border-radius:14px;
+  text-align:center;
+  box-shadow:0 0 25px rgba(0,255,255,.25);
+}
+h2{margin-bottom:10px}
+input{
+  width:100%;
+  padding:12px;
+  margin:10px 0;
+  border-radius:8px;
+  border:none;
+  font-size:15px;
+}
+button{
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  border:none;
+  border-radius:8px;
+  background:#00e5ff;
+  color:#000;
+  font-weight:600;
+  font-size:16px;
+  cursor:pointer;
+}
+#msg{
+  margin-top:12px;
+  font-size:14px;
+}
+.success{color:#00ff99}
+.error{color:#ff5c5c}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+  <h2>📍 S Square Fitness</h2>
+  <p>Confirm Attendance</p>
+
+  <input id="attUser" placeholder="Member ID">
+  <input id="attPass" type="password" placeholder="Password">
+
+  <button onclick="confirm()">Confirm Attendance</button>
+
+  <div id="msg"></div>
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+<script>
+/* 🔥 SAME CONFIG AS MAIN SITE */
+firebase.initializeApp({
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID"
+});
+
+const db = firebase.firestore();
+
+async function confirm(){
+  const id = attUser.value.trim();
+  const pass = attPass.value.trim();
+  msg.innerHTML = "Checking...";
+
+  if(!id || !pass){
+    msg.innerHTML = "<span class='error'>Enter ID & Password</span>";
+    return;
+  }
+
+  const doc = await db.collection("members").doc(id).get();
+  if(!doc.exists || doc.data().password !== pass){
+    msg.innerHTML = "<span class='error'>Invalid login</span>";
+    return;
+  }
+
+  const today = new Date().toLocaleDateString();
+
+  // ❌ Duplicate block
+  const already = await db.collection("attendance")
+    .where("memberId","==",id)
+    .where("date","==",today)
+    .get();
+
+  if(!already.empty){
+    msg.innerHTML = "<span class='error'>Attendance already marked</span>";
+    return;
+  }
+
+  // ✅ Save attendance
+  await db.collection("attendance").add({
+    memberId:id,
+    name:doc.data().name,
+    date:today,
+    time:new Date().toLocaleTimeString(),
+    method:"QR",
+    created: firebase.firestore.FieldValue.serverTimestamp()
+  });
+
+  msg.innerHTML = "<span class='success'>Attendance Marked ✅</span>";
+}
+</script>
+
+</body>
+</html>
