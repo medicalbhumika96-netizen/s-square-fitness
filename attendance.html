@@ -129,7 +129,8 @@ async function confirmAttendance(){
       memberId: id,
       name: memberDoc.data().name,
       timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-      method: "QR"
+      method: "QR Scan"
+
     });
 
     msg.innerHTML = "<span class='success'>Attendance Marked ✅</span>";
