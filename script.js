@@ -7,9 +7,12 @@ const firebaseConfig = {
   appId: "1:1046572126467:web:f1ef5423b6dce3102dd936"
 };
 
-firebase.initializeApp(firebaseConfig);
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
 const db = firebase.firestore();
 
+console.log("Firebase project:", firebase.app().options.projectId);
 
 /***********************
   GLOBAL STATE
