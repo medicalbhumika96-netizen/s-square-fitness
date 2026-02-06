@@ -47,6 +47,27 @@ async function login(){
 
   msg.innerText = "✅ Attendance Marked";
 }
+function adminLogin() {
+  const username = document.getElementById("username").value;
+  const password = document.getElementById("password").value;
+
+  if (username === "admin" && password === "123") {
+    localStorage.setItem("adminLoggedIn", "true");
+    window.location.href = "attendance.html";
+  } else {
+    alert("Invalid Admin Credentials");
+  }
+}function adminLogin() {
+  const username = document.getElementById("username").value;
+  const password = document.getElementById("password").value;
+
+  if (username === "admin" && password === "123") {
+    localStorage.setItem("adminLoggedIn", "true");
+    window.location.href = "attendance.html";
+  } else {
+    alert("Invalid Admin Credentials");
+  }
+}
 </script>
 
 </body>

@@ -80,6 +80,10 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
+ if (localStorage.getItem("adminLoggedIn") !== "true") {
+    alert("Unauthorized Access! Please Login as Admin");
+    window.location.href = "login.html";
+  }
 /* ✅ CONFIRM ATTENDANCE LOGIC */
 async function confirmAttendance(){
   const id = attUser.value.trim();
