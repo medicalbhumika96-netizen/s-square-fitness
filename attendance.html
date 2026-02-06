@@ -67,7 +67,7 @@ button{
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
 <script>
-/* 🔥 FIREBASE INIT (THIS WAS MISSING) */
+/* 🔥 FIREBASE INIT */
 const firebaseConfig = {
   apiKey: "AIzaSyA86S_0I4A35DB26Z2RHL0QUMbDYFBzge4",
   authDomain: "fir-square-fitness.firebaseapp.com",
@@ -80,11 +80,13 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
- if (localStorage.getItem("adminLoggedIn") !== "true") {
-    alert("Unauthorized Access! Please Login as Admin");
-    window.location.href = "login.html";
-  }
-/* ✅ CONFIRM ATTENDANCE LOGIC */
+/* 🔒 ADMIN PROTECTION */
+if (localStorage.getItem("adminLoggedIn") !== "true") {
+  alert("Unauthorized Access! Please Login as Admin");
+  window.location.href = "login.html";
+}
+
+/* ✅ CONFIRM ATTENDANCE */
 async function confirmAttendance(){
   const id = attUser.value.trim();
   const pass = attPass.value.trim();
@@ -96,20 +98,25 @@ async function confirmAttendance(){
   }
 
   try{
-    const doc = await db.collection("members").doc(id).get();
+    const memberDoc = await db.collection("members").doc(id).get();
 
-    if(!doc.exists || doc.data().password !== pass){
+    if(!memberDoc.exists || memberDoc.data().password !== pass){
       msg.innerHTML = "<span class='error'>Invalid login</span>";
       return;
     }
 
-    const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
+    /* 📅 TODAY RANGE (IMPORTANT FIX) */
+    const start = new Date();
+    start.setHours(0,0,0,0);
 
+    const end = new Date();
+    end.setHours(23,59,59,999);
 
-    // ❌ Prevent duplicate attendance
+    /* ❌ PREVENT DUPLICATE ATTENDANCE */
     const already = await db.collection("attendance")
       .where("memberId","==",id)
-      .where("date","==",today)
+      .where("timestamp",">=",start)
+      .where("timestamp","<=",end)
       .get();
 
     if(!already.empty){
@@ -117,14 +124,12 @@ async function confirmAttendance(){
       return;
     }
 
-    // ✅ Save attendance
+    /* ✅ SAVE ATTENDANCE (STANDARD WAY) */
     await db.collection("attendance").add({
       memberId: id,
-      name: doc.data().name,
-      date: today,
-      time: new Date().toLocaleTimeString(),
-      method: "QR",
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      name: memberDoc.data().name,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+      method: "QR"
     });
 
     msg.innerHTML = "<span class='success'>Attendance Marked ✅</span>";
