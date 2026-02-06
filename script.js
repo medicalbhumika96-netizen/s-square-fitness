@@ -10,6 +10,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
+
 /***********************
   GLOBAL STATE
 ************************/
@@ -99,43 +100,39 @@ function showAdminTab(tab) {
 async function addMember(e) {
   e.preventDefault();
 
-  const id = mUser.value.trim();
-  const name = mName.value.trim();
-  const pass = mPass.value.trim();
-  const expiry = mExpiry.value;
-  const trainer = mTrainer.value;
-  const plan = mPlan.value;
-
-  if (!id || !name || !pass || !expiry) {
+  if (
+    !mUser.value ||
+    !mName.value ||
+    !mPass.value ||
+    !mExpiry.value ||
+    !mTrainer.value ||
+    !mPlan.value
+  ) {
     adminMsg.innerText = "❌ All fields required";
     return;
   }
 
-  try {
-    await db.collection("members").doc(id).set({
-      id,
-      name,
-      password: pass,
-      expiry, // YYYY-MM-DD
-      trainer,
-      plan,
-      created: firebase.firestore.FieldValue.serverTimestamp(),
-    });
+  await db.collection("members").doc(mUser.value.trim()).set({
+    name: mName.value.trim(),
+    password: mPass.value.trim(),
+    expiry: mExpiry.value,
+    trainer: mTrainer.value,
+    plan: mPlan.value,
+    created: firebase.firestore.FieldValue.serverTimestamp()
+  });
 
-    adminMsg.innerText = "✅ Member Added";
+  adminMsg.innerText = "✅ Member Added";
 
-    // clear form
-    mUser.value = "";
-    mName.value = "";
-    mPass.value = "";
-    mExpiry.value = "";
+  mUser.value = "";
+  mName.value = "";
+  mPass.value = "";
+  mExpiry.value = "";
+  mTrainer.value = "";
+  mPlan.value = "";
 
-    loadMembers();
-  } catch (err) {
-    console.error(err);
-    adminMsg.innerText = "❌ Error adding member";
-  }
+  loadMembers();
 }
+
 
 /***********************
   LOAD MEMBERS
