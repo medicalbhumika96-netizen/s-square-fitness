@@ -1,10 +1,10 @@
-/***********************
-  🔥 FIREBASE CONFIG
-************************/
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
+  apiKey: "AIzaSyA86S_0I4A35DB26Z2RHL0QUMbDYFBzge4",
+  authDomain: "fir-square-fitness.firebaseapp.com",
+  projectId: "fir-square-fitness",
+  storageBucket: "fir-square-fitness.firebasestorage.app",
+  messagingSenderId: "1046572126467",
+  appId: "1:1046572126467:web:f1ef5423b6dce3102dd936"
 };
 
 firebase.initializeApp(firebaseConfig);
