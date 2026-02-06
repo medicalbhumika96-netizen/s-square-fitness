@@ -29,27 +29,34 @@ async function memberLogin() {
     return;
   }
 
-  const doc = await db.collection("members").doc(user).get();
-  if (!doc.exists || doc.data().password !== pass) {
-    memberMsg.innerText = "Invalid login";
-    return;
+  try {
+    const doc = await db.collection("members").doc(user).get();
+
+    if (!doc.exists || doc.data().password !== pass) {
+      memberMsg.innerText = "Invalid login";
+      return;
+    }
+
+    currentMember = { id: user, ...doc.data() };
+
+    memberSection.style.display = "flex";
+    publicSite.style.display = "none";
+    memberCard.style.display = "none";
+    adminLoginCard.style.display = "none";
+
+    memberName.innerText = currentMember.name;
+    mExpiry.innerText = "Expiry: " + currentMember.expiry;
+
+    mFeeStatus.innerText =
+      new Date(currentMember.expiry) >= new Date()
+        ? "Active"
+        : "Expired";
+
+    loadMemberAttendance();
+  } catch (err) {
+    console.error(err);
+    memberMsg.innerText = "Login error";
   }
-
-  currentMember = { id: user, ...doc.data() };
-
-  memberSection.style.display = "flex";
-  publicSite.style.display = "none";
-  memberCard.style.display = "none";
-  adminLoginCard.style.display = "none";
-
-  memberName.innerText = currentMember.name;
-  mExpiry.innerText = "Expiry: " + currentMember.expiry;
-  mFeeStatus.innerText =
-    new Date(currentMember.expiry) >= new Date()
-      ? "Active"
-      : "Expired";
-
-  loadMemberAttendance();
 }
 
 /***********************
@@ -77,7 +84,7 @@ function adminLoginUI() {
 function showAdminTab(tab) {
   document
     .querySelectorAll(".admin-tab")
-    .forEach((t) => (t.style.display = "none"));
+    .forEach(t => (t.style.display = "none"));
 
   if (tab === "dashboard") dashboardTab.style.display = "block";
   if (tab === "members") membersTab.style.display = "block";
@@ -87,41 +94,81 @@ function showAdminTab(tab) {
 }
 
 /***********************
-  ADD MEMBER
+  ✅ ADD MEMBER (FIXED)
 ************************/
 async function addMember(e) {
   e.preventDefault();
 
-  await db.collection("members").doc(mUser.value).set({
-    name: mName.value,
-    password: mPass.value,
-    expiry: mExpiry.value,
-    trainer: mTrainer.value,
-    plan: mPlan.value,
-  });
+  const id = mUser.value.trim();
+  const name = mName.value.trim();
+  const pass = mPass.value.trim();
+  const expiry = mExpiry.value;
+  const trainer = mTrainer.value;
+  const plan = mPlan.value;
 
-  adminMsg.innerText = "Member Added";
-  loadMembers();
+  if (!id || !name || !pass || !expiry) {
+    adminMsg.innerText = "❌ All fields required";
+    return;
+  }
+
+  try {
+    await db.collection("members").doc(id).set({
+      id,
+      name,
+      password: pass,
+      expiry, // YYYY-MM-DD
+      trainer,
+      plan,
+      created: firebase.firestore.FieldValue.serverTimestamp(),
+    });
+
+    adminMsg.innerText = "✅ Member Added";
+
+    // clear form
+    mUser.value = "";
+    mName.value = "";
+    mPass.value = "";
+    mExpiry.value = "";
+
+    loadMembers();
+  } catch (err) {
+    console.error(err);
+    adminMsg.innerText = "❌ Error adding member";
+  }
 }
 
 /***********************
   LOAD MEMBERS
 ************************/
 async function loadMembers() {
-  memberTable.innerHTML = "";
-  const snap = await db.collection("members").get();
+  memberTable.innerHTML = "<tr><td colspan='5'>Loading...</td></tr>";
 
-  snap.forEach((doc) => {
-    const m = doc.data();
-    memberTable.innerHTML += `
-      <tr>
-        <td>${doc.id}</td>
-        <td>${m.name}</td>
-        <td>${m.trainer}</td>
-        <td>${m.expiry}</td>
-        <td>-</td>
-      </tr>`;
-  });
+  try {
+    const snap = await db.collection("members").get();
+
+    if (snap.empty) {
+      memberTable.innerHTML =
+        "<tr><td colspan='5'>No members</td></tr>";
+      return;
+    }
+
+    memberTable.innerHTML = "";
+    snap.forEach(doc => {
+      const m = doc.data();
+      memberTable.innerHTML += `
+        <tr>
+          <td>${doc.id}</td>
+          <td>${m.name}</td>
+          <td>${m.trainer}</td>
+          <td>${m.expiry}</td>
+          <td>-</td>
+        </tr>`;
+    });
+  } catch (err) {
+    console.error(err);
+    memberTable.innerHTML =
+      "<tr><td colspan='5'>Error loading</td></tr>";
+  }
 }
 
 /***********************
@@ -133,7 +180,8 @@ async function loadDashboard() {
 
   let active = 0,
     expired = 0;
-  snap.forEach((d) =>
+
+  snap.forEach(d =>
     new Date(d.data().expiry) >= new Date() ? active++ : expired++
   );
 
@@ -145,85 +193,92 @@ async function loadDashboard() {
   🔥 QR / LOGIN ATTENDANCE
 ************************/
 async function confirmAttendance(memberId, password) {
-  const memberRef = db.collection("members").doc(memberId);
-  const doc = await memberRef.get();
+  try {
+    const memberRef = db.collection("members").doc(memberId);
+    const doc = await memberRef.get();
 
-  if (!doc.exists || doc.data().password !== password) {
-    alert("Invalid credentials");
-    return;
+    if (!doc.exists || doc.data().password !== password) {
+      alert("Invalid credentials");
+      return;
+    }
+
+    const today = new Date().toISOString().split("T")[0];
+
+    // 🔒 Duplicate block
+    const check = await db
+      .collection("attendance")
+      .where("memberId", "==", memberId)
+      .where("date", "==", today)
+      .get();
+
+    if (!check.empty) {
+      alert("Attendance already marked today");
+      return;
+    }
+
+    await db.collection("attendance").add({
+      memberId,
+      name: doc.data().name,
+      date: today,
+      time: new Date().toLocaleTimeString(),
+      method: "QR",
+      created: firebase.firestore.FieldValue.serverTimestamp(),
+    });
+
+    alert("Attendance marked successfully ✅");
+  } catch (err) {
+    console.error(err);
+    alert("Attendance error");
   }
-
-  const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
-
-
-  // 🔒 Duplicate block
-  const check = await db
-    .collection("attendance")
-    .where("memberId", "==", memberId)
-    .where("date", "==", today)
-    .get();
-
-  if (!check.empty) {
-    alert("Attendance already marked today");
-    return;
-  }
-
-  // ✅ Save attendance
-  await db.collection("attendance").add({
-    memberId,
-    name: doc.data().name,
-    date: today,
-    time: new Date().toLocaleTimeString(),
-    method: "QR",
-    created: firebase.firestore.FieldValue.serverTimestamp(),
-  });
-
-  alert("Attendance marked successfully ✅");
 }
 
 /***********************
   ADMIN ATTENDANCE TABLE
 ************************/
 async function loadAttendance() {
-  const table = document.getElementById("attendanceTable");
+  const table = attendanceTable;
   table.innerHTML = "<tr><td colspan='5'>Loading...</td></tr>";
 
-  const date = document.getElementById("attDate").value;
-  const method = document.getElementById("attMethod").value;
+  const date = attDate.value;
+  const method = attMethod.value;
 
   let query = db.collection("attendance");
 
-  if (date) {
-    query = query.where("date", "==", date);
-  }
-  if (method) {
-    query = query.where("method", "==", method);
-  }
+  if (date) query = query.where("date", "==", date);
+  if (method) query = query.where("method", "==", method);
 
-  const snap = await query.orderBy("created", "desc").get();
+  try {
+    const snap = await query
+      .orderBy("created", "desc")
+      .get();
 
-  if (snap.empty) {
-    table.innerHTML = "<tr><td colspan='5'>No records</td></tr>";
-    return;
+    if (snap.empty) {
+      table.innerHTML =
+        "<tr><td colspan='5'>No records</td></tr>";
+      return;
+    }
+
+    table.innerHTML = "";
+    snap.forEach(doc => {
+      const d = doc.data();
+      table.innerHTML += `
+        <tr>
+          <td>${d.memberId}</td>
+          <td>${d.name}</td>
+          <td>${d.date}</td>
+          <td>${d.time}</td>
+          <td>${d.method}</td>
+        </tr>`;
+    });
+  } catch (err) {
+    console.error(err);
+    table.innerHTML =
+      "<tr><td colspan='5'>Error loading</td></tr>";
   }
-
-  table.innerHTML = "";
-  snap.forEach(doc => {
-    const d = doc.data();
-    table.innerHTML += `
-      <tr>
-        <td>${d.memberId}</td>
-        <td>${d.name}</td>
-        <td>${d.date}</td>
-        <td>${d.time}</td>
-        <td>${d.method}</td>
-      </tr>
-    `;
-  });
 }
 
 /***********************
-  MEMBER ATTENDANCE %
+  MEMBER ATTENDANCE
 ************************/
 async function loadMemberAttendance() {
   const snap = await db
