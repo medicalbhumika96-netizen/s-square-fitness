@@ -108,16 +108,14 @@ function showAdminTab(tab) {
   if (tab === "attendance") loadAttendance();
 }
 
-/***********************
-  ✅ ADD MEMBER (FIXED)
-************************/
+
 async function addMember(e) {
   e.preventDefault();
 
   if (
-    !mUser.value ||
-    !mName.value ||
-    
+    !mUser.value.trim() ||
+    !mName.value.trim() ||
+    !mPass.value.trim() ||   // ✅ ADD THIS
     !mExpiry.value ||
     !mTrainer.value ||
     !mPlan.value
