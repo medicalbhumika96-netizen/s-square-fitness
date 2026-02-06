@@ -106,7 +106,7 @@ async function addMember(e) {
   if (
     !mUser.value ||
     !mName.value ||
-    !mPass.value ||
+    
     !mExpiry.value ||
     !mTrainer.value ||
     !mPlan.value

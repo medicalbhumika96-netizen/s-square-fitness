@@ -1,217 +1,237 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>S Square Fitness Talegaon</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+<head>
+  <meta charset="UTF-8">
+  <title>S Square Fitness Talegaon</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-<!-- ================= HERO ================= -->
-<div class="hero" id="publicSite">
-  <div class="container">
-    <h1>S Square <span>Fitness</span></h1>
-    <p>Premium Gym | Cardio • Strength • Personal Training</p>
-    <a href="tel:8003929804" class="btn">📞 Call Now</a>
-    <a href="https://wa.me/918003929804" class="btn whatsapp">💬 WhatsApp</a>
-  </div>
-</div>
-
-<!-- ================= ABOUT ================= -->
-<section class="section-soft">
-  <div class="container">
-    <h2>Why Choose Us</h2>
-    <div class="features">
-      <div class="box"><h3>Modern Equipment</h3></div>
-      <div class="box"><h3>Certified Trainers</h3></div>
-      <div class="box"><h3>Clean & Premium</h3></div>
+  <!-- ================= HERO ================= -->
+  <div class="hero" id="publicSite">
+    <div class="container">
+      <h1>S Square <span>Fitness</span></h1>
+      <p>Premium Gym | Cardio • Strength • Personal Training</p>
+      <a href="tel:8003929804" class="btn">📞 Call Now</a>
+      <a href="https://wa.me/918003929804" class="btn whatsapp">💬 WhatsApp</a>
     </div>
   </div>
-</section>
 
-<!-- ================= LOGIN ================= -->
-<section class="section-panel">
-  <div class="container dashboard">
-
-    <!-- MEMBER LOGIN -->
-    <div class="card" id="memberCard">
-      <h2>Member Login</h2>
-      <input id="memberUser" placeholder="Member ID">
-      <input id="memberPass" type="password" placeholder="Password">
-      <button onclick="memberLogin()">Login</button>
-      <p id="memberMsg"></p>
-    </div>
-
-    <!-- ADMIN LOGIN -->
-    <div class="card" id="adminLoginCard">
-      <h2>Admin Login</h2>
-      <input id="adminPass" type="password" placeholder="Admin Password">
-      <button onclick="adminLoginUI()">Login</button>
-      <p id="adminLoginMsg"></p>
-    </div>
-
-  </div>
-</section>
-
-<!-- ================= ADMIN PANEL ================= -->
-<section class="admin-layout" id="adminSection" style="display:none">
-
-  <aside class="admin-sidebar">
-    <h2>S Square</h2>
-    <button onclick="showAdminTab('dashboard')">📊 Dashboard</button>
-    <button onclick="showAdminTab('members')">👥 Members</button>
-    <button onclick="showAdminTab('attendance')">🧾 Attendance</button>
-    <button onclick="adminLogout()" class="logout">🚪 Logout</button>
-  </aside>
-
-  <main class="admin-main">
-
-    <!-- DASHBOARD -->
-    <div class="admin-tab" id="dashboardTab">
-      <h2>Admin Dashboard</h2>
-      <div class="stat-grid">
-        <div class="stat-card"><h4>Total Members</h4><p id="totalMembers">0</p></div>
-        <div class="stat-card"><h4>Active Fees</h4><p id="activeFees">0</p></div>
-        <div class="stat-card"><h4>Expired Fees</h4><p id="expiredFees">0</p></div>
-      </div>
-    </div>
-
-    <!-- MEMBERS -->
-    <div class="admin-tab" id="membersTab" style="display:none">
-      <h2>Member Management</h2>
-
-      <form class="add-member-box" onsubmit="addMember(event)">
-        <input id="mUser" placeholder="Member ID" required>
-        <input id="mName" placeholder="Member Name" required>
-        <input id="mPass" placeholder="Password" required>
-        <input id="mExpiry" type="date" required>
-
-        <select id="mTrainer">
-          <option value="Trainer1">Trainer 1</option>
-          <option value="Trainer2">Trainer 2</option>
-        </select>
-
-        <select id="mPlan">
-          <option value="Monthly">Monthly</option>
-          <option value="Quarterly">Quarterly</option>
-          <option value="Yearly">Yearly</option>
-        </select>
-
-        <button type="submit">Add Member</button>
-        <p id="adminMsg"></p>
-      </form>
-
-      <table class="member-table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Trainer</th>
-            <th>Expiry</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody id="memberTable"></tbody>
-      </table>
-    </div>
-
-    <!-- ================= ATTENDANCE ================= -->
-    <div class="admin-tab" id="attendanceTab" style="display:none">
-      <h2>📋 Attendance Records</h2>
-
-      <div class="attendance-filters">
-        <input type="date" id="attDate">
-        <select id="attMethod">
-          <option value="">All</option>
-          <option value="QR">QR Scan</option>
-          <option value="Manual">Manual</option>
-        </select>
-        <button onclick="loadAttendance()">Filter</button>
-      </div>
-
-      <table class="member-table">
-        <thead>
-          <tr>
-            <th>Member ID</th>
-            <th>Name</th>
-            <th>Date</th>
-            <th>Time</th>
-            <th>Method</th>
-          </tr>
-        </thead>
-        <tbody id="attendanceTable">
-          <tr><td colspan="5">No attendance yet</td></tr>
-        </tbody>
-      </table>
-    </div>
-
-  </main>
-</section>
-
-<!-- ================= MEMBER PANEL ================= -->
-<section class="member-layout" id="memberSection" style="display:none">
-
-  <aside class="member-sidebar">
-    <h2>Member</h2>
-    <button onclick="showMemberTab('mdashboard')">🏠 Dashboard</button>
-    <button onclick="showMemberTab('workout')">🏋️ Workout</button>
-    <button onclick="showMemberTab('progress')">📊 Progress</button>
-    <button onclick="renewFee()">💳 Renew Fee</button>
-    <button onclick="chatTrainer()">💬 Support</button>
-    <button onclick="memberLogout()" class="logout">🚪 Logout</button>
-  </aside>
-
-  <main class="member-main">
-
-    <div class="member-tab" id="mdashboard">
-      <h2>Welcome, <span id="memberName"></span></h2>
-
-      <div class="stat-grid">
-        <div class="stat-card">
-          <h4>Fee Status</h4>
-          <p id="mFeeStatus"></p>
-          <small id="mExpiry"></small>
+  <!-- ================= ABOUT ================= -->
+  <section class="section-soft">
+    <div class="container">
+      <h2>Why Choose Us</h2>
+      <div class="features">
+        <div class="box">
+          <h3>Modern Equipment</h3>
         </div>
-        <div class="stat-card">
-          <h4>Attendance</h4>
-          <p id="mAttendance">0%</p>
+        <div class="box">
+          <h3>Certified Trainers</h3>
+        </div>
+        <div class="box">
+          <h3>Clean & Premium</h3>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= LOGIN ================= -->
+  <section class="section-panel">
+    <div class="container dashboard">
+
+      <!-- MEMBER LOGIN -->
+      <div class="card" id="memberCard">
+        <h2>Member Login</h2>
+        <input id="memberUser" placeholder="Member ID">
+        <input id="memberPass" type="password" placeholder="Password">
+        <button onclick="memberLogin()">Login</button>
+        <p id="memberMsg"></p>
+      </div>
+
+      <!-- ADMIN LOGIN -->
+      <div class="card" id="adminLoginCard">
+        <h2>Admin Login</h2>
+        <input id="adminPass" type="password" placeholder="Admin Password">
+        <button onclick="adminLoginUI()">Login</button>
+        <p id="adminLoginMsg"></p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ================= ADMIN PANEL ================= -->
+  <section class="admin-layout" id="adminSection" style="display:none">
+
+    <aside class="admin-sidebar">
+      <h2>S Square</h2>
+      <button onclick="showAdminTab('dashboard')">📊 Dashboard</button>
+      <button onclick="showAdminTab('members')">👥 Members</button>
+      <button onclick="showAdminTab('attendance')">🧾 Attendance</button>
+      <button onclick="adminLogout()" class="logout">🚪 Logout</button>
+    </aside>
+
+    <main class="admin-main">
+
+      <!-- DASHBOARD -->
+      <div class="admin-tab" id="dashboardTab">
+        <h2>Admin Dashboard</h2>
+        <div class="stat-grid">
+          <div class="stat-card">
+            <h4>Total Members</h4>
+            <p id="totalMembers">0</p>
+          </div>
+          <div class="stat-card">
+            <h4>Active Fees</h4>
+            <p id="activeFees">0</p>
+          </div>
+          <div class="stat-card">
+            <h4>Expired Fees</h4>
+            <p id="expiredFees">0</p>
+          </div>
         </div>
       </div>
 
-      <canvas id="attendanceChart"></canvas>
-    </div>
+      <!-- MEMBERS -->
+      <div class="admin-tab" id="membersTab" style="display:none">
+        <h2>Member Management</h2>
 
-    <div class="member-tab" id="workout" style="display:none">
-      <h2>Workout Plan</h2>
-      <ul>
-        <li>Chest</li>
-        <li>Back</li>
-        <li>Legs</li>
-      </ul>
-    </div>
+        <form class="add-member-box" onsubmit="addMember(event)">
+          <input id="mUser" placeholder="Member ID" required>
+          <input id="mName" placeholder="Member Name" required>
+          <input id="mPass" placeholder="Password" type="password" required>
+          <input id="mExpiry" type="date" required>
 
-    <div class="member-tab" id="progress" style="display:none">
-      <h2>Weight Progress</h2>
-      <input id="weightInput" type="number">
-      <button onclick="addWeight()">Add</button>
-      <ul id="weightList"></ul>
-    </div>
+          <select id="mTrainer">
+            <option value="Trainer1">Trainer 1</option>
+            <option value="Trainer2">Trainer 2</option>
+          </select>
 
-  </main>
-</section>
+          <select id="mPlan">
+            <option value="Monthly">Monthly</option>
+            <option value="Quarterly">Quarterly</option>
+            <option value="Yearly">Yearly</option>
+          </select>
 
-<footer>© 2026 S Square Fitness Talegaon</footer>
+          <button type="submit">Add Member</button>
+          <p id="adminMsg"></p>
+        </form>
 
-<!-- LIBS -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+        <table class="member-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Trainer</th>
+              <th>Expiry</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="memberTable"></tbody>
+        </table>
+      </div>
 
-<!-- MAIN LOGIC -->
-<script src="script.js"></script>
+      <!-- ================= ATTENDANCE ================= -->
+      <div class="admin-tab" id="attendanceTab" style="display:none">
+        <h2>📋 Attendance Records</h2>
+
+        <div class="attendance-filters">
+          <input type="date" id="attDate">
+          <select id="attMethod">
+            <option value="">All</option>
+            <option value="QR">QR Scan</option>
+            <option value="Manual">Manual</option>
+          </select>
+          <button onclick="loadAttendance()">Filter</button>
+        </div>
+
+        <table class="member-table">
+          <thead>
+            <tr>
+              <th>Member ID</th>
+              <th>Name</th>
+              <th>Date</th>
+              <th>Time</th>
+              <th>Method</th>
+            </tr>
+          </thead>
+          <tbody id="attendanceTable">
+            <tr>
+              <td colspan="5">No attendance yet</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </main>
+  </section>
+
+  <!-- ================= MEMBER PANEL ================= -->
+  <section class="member-layout" id="memberSection" style="display:none">
+
+    <aside class="member-sidebar">
+      <h2>Member</h2>
+      <button onclick="showMemberTab('mdashboard')">🏠 Dashboard</button>
+      <button onclick="showMemberTab('workout')">🏋️ Workout</button>
+      <button onclick="showMemberTab('progress')">📊 Progress</button>
+      <button onclick="renewFee()">💳 Renew Fee</button>
+      <button onclick="chatTrainer()">💬 Support</button>
+      <button onclick="memberLogout()" class="logout">🚪 Logout</button>
+    </aside>
+
+    <main class="member-main">
+
+      <div class="member-tab" id="mdashboard">
+        <h2>Welcome, <span id="memberName"></span></h2>
+
+        <div class="stat-grid">
+          <div class="stat-card">
+            <h4>Fee Status</h4>
+            <p id="mFeeStatus"></p>
+            <small id="mExpiry"></small>
+          </div>
+          <div class="stat-card">
+            <h4>Attendance</h4>
+            <p id="mAttendance">0%</p>
+          </div>
+        </div>
+
+        <canvas id="attendanceChart"></canvas>
+      </div>
+
+      <div class="member-tab" id="workout" style="display:none">
+        <h2>Workout Plan</h2>
+        <ul>
+          <li>Chest</li>
+          <li>Back</li>
+          <li>Legs</li>
+        </ul>
+      </div>
+
+      <div class="member-tab" id="progress" style="display:none">
+        <h2>Weight Progress</h2>
+        <input id="weightInput" type="number">
+        <button onclick="addWeight()">Add</button>
+        <ul id="weightList"></ul>
+      </div>
+
+    </main>
+  </section>
+
+  <footer>© 2026 S Square Fitness Talegaon</footer>
+
+  <!-- LIBS -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+  <!-- MAIN LOGIC -->
+  <script src="script.js"></script>
 
 </body>
+
 </html>
