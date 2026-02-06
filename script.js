@@ -31,6 +31,10 @@ const memberTable = document.getElementById("memberTable");
 let currentMember = null;
 let adminLoggedIn = false;
 
+if(localStorage.getItem("adminLoggedIn") !== "true"){
+  document.getElementById("adminSection").style.display = "none";
+}
+
 /***********************
   MEMBER LOGIN
 ************************/
@@ -244,47 +248,66 @@ async function confirmAttendance(memberId, password) {
 /***********************
   ADMIN ATTENDANCE TABLE
 ************************/
-async function loadAttendance() {
-  const table = attendanceTable;
-  table.innerHTML = "<tr><td colspan='5'>Loading...</td></tr>";
+async function loadAttendance(){
+  const dateInput = document.getElementById("attDate").value;
+  const method = document.getElementById("attMethod").value;
+  const tbody = document.getElementById("attendanceTable");
 
-  const date = attDate.value;
-  const method = attMethod.value;
+  if(!dateInput){
+    alert("Please select date");
+    return;
+  }
 
-  let query = db.collection("attendance");
+  tbody.innerHTML = `<tr><td colspan="5">Loading...</td></tr>`;
 
-  if (date) query = query.where("date", "==", date);
-  if (method) query = query.where("method", "==", method);
+  // 📅 Date range
+  const start = new Date(dateInput);
+  start.setHours(0,0,0,0);
 
-  try {
-    const snap = await query
-      .orderBy("created", "desc")
-      .get();
+  const end = new Date(dateInput);
+  end.setHours(23,59,59,999);
 
-    if (snap.empty) {
-      table.innerHTML =
-        "<tr><td colspan='5'>No records</td></tr>";
+  try{
+    let queryRef = db.collection("attendance")
+      .where("timestamp", ">=", start)
+      .where("timestamp", "<=", end);
+
+    // 🎯 Method filter (optional)
+    if(method){
+      queryRef = queryRef.where("method", "==", method);
+    }
+
+    const snap = await queryRef.get();
+
+    if(snap.empty){
+      tbody.innerHTML = `<tr><td colspan="5">No attendance found</td></tr>`;
       return;
     }
 
-    table.innerHTML = "";
-    snap.forEach(doc => {
-      const d = doc.data();
-      table.innerHTML += `
+    tbody.innerHTML = "";
+
+    snap.forEach(doc=>{
+      const a = doc.data();
+      const t = a.timestamp.toDate();
+
+      const row = `
         <tr>
-          <td>${d.memberId}</td>
-          <td>${d.name}</td>
-          <td>${d.date}</td>
-          <td>${d.time}</td>
-          <td>${d.method}</td>
-        </tr>`;
+          <td>${a.user || a.memberId}</td>
+          <td>${a.name}</td>
+          <td>${t.toLocaleDateString()}</td>
+          <td>${t.toLocaleTimeString()}</td>
+          <td>${a.method}</td>
+        </tr>
+      `;
+      tbody.innerHTML += row;
     });
-  } catch (err) {
+
+  }catch(err){
     console.error(err);
-    table.innerHTML =
-      "<tr><td colspan='5'>Error loading</td></tr>";
+    tbody.innerHTML = `<tr><td colspan="5">Error loading attendance</td></tr>`;
   }
 }
+
 
 /***********************
   MEMBER ATTENDANCE
