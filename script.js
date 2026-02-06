@@ -14,6 +14,17 @@ const db = firebase.firestore();
 
 console.log("Firebase project:", firebase.app().options.projectId);
 
+
+// 🔗 FORM ELEMENT BINDS (VERY IMPORTANT)
+const mUser = document.getElementById("mUser");
+const mName = document.getElementById("mName");
+const mPass = document.getElementById("mPass");
+const mExpiry = document.getElementById("mExpiry");
+const mTrainer = document.getElementById("mTrainer");
+const mPlan = document.getElementById("mPlan");
+const adminMsg = document.getElementById("adminMsg");
+const memberTable = document.getElementById("memberTable");
+
 /***********************
   GLOBAL STATE
 ************************/
