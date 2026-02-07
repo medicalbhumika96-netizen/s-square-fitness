@@ -24,6 +24,7 @@ const mTrainer = document.getElementById("mTrainer");
 const mPlan = document.getElementById("mPlan");
 const adminMsg = document.getElementById("adminMsg");
 const memberTable = document.getElementById("memberTable");
+const isDesktop = window.matchMedia("(pointer: fine)").matches;
 
 /***********************
   GLOBAL STATE
@@ -331,3 +332,119 @@ function memberLogout() {
 function adminLogout() {
   location.reload();
 }
+const scrollTopBtn = document.getElementById("scrollTopBtn");
+
+window.addEventListener("scroll", () => {
+  if(window.scrollY > 300){
+    scrollTopBtn.style.display = "block";
+  }else{
+    scrollTopBtn.style.display = "none";
+  }
+});
+
+scrollTopBtn.addEventListener("click", () => {
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+});
+// 3D hover tilt effect
+const tiltCards = document.querySelectorAll(
+  ".about-card, .plan-card, .trainer-card, .box"
+);
+
+if(isDesktop){
+  const tiltCards = document.querySelectorAll(
+    ".about-card, .plan-card, .trainer-card, .box"
+  );
+
+  tiltCards.forEach(card => {
+    card.addEventListener("mousemove", e => {
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+
+      const rotateX = -(y - centerY) / 25;
+      const rotateY = (x - centerX) / 25;
+
+      card.style.transform =
+        `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`;
+    });
+
+    card.addEventListener("mouseleave", () => {
+      card.style.transform = "none";
+    });
+  });
+}
+document.querySelectorAll(
+  ".about-card, .plan-card, .trainer-card, .box"
+).forEach(card => {
+  card.addEventListener("touchstart", () => {
+    card.classList.add("tap-active");
+  });
+
+  card.addEventListener("touchend", () => {
+    setTimeout(() => {
+      card.classList.remove("tap-active");
+    }, 200);
+  });
+});
+// Mouse glow effect on about section
+const aboutSection = document.querySelector(".about-pro");
+
+if(aboutSection){
+  aboutSection.addEventListener("mousemove", e => {
+    const x = e.clientX;
+    const y = e.clientY;
+
+    aboutSection.style.background = `
+      radial-gradient(
+        600px at ${x}px ${y}px,
+        rgba(0,230,195,0.12),
+        #0f1720 70%
+      )
+    `;
+  });
+
+  aboutSection.addEventListener("mouseleave", () => {
+    aboutSection.style.background = "#0f1720";
+  });
+}
+// Ripple effect on buttons
+document.querySelectorAll("button, .btn").forEach(btn => {
+  btn.addEventListener("click", function(e){
+    const circle = document.createElement("span");
+    const diameter = Math.max(this.clientWidth, this.clientHeight);
+    const radius = diameter / 2;
+
+    circle.style.width = circle.style.height = `${diameter}px`;
+    circle.style.left = `${e.clientX - this.offsetLeft - radius}px`;
+    circle.style.top = `${e.clientY - this.offsetTop - radius}px`;
+    circle.classList.add("ripple");
+
+    const ripple = this.querySelector(".ripple");
+    if(ripple) ripple.remove();
+
+    this.appendChild(circle);
+  });
+});
+// Trainer focus effect
+const trainers = document.querySelectorAll(".trainer-card");
+
+trainers.forEach(card => {
+  card.addEventListener("mouseenter", () => {
+    trainers.forEach(c => c.style.opacity = "0.4");
+    card.style.opacity = "1";
+    card.style.transform += " scale(1.05)";
+  });
+
+  card.addEventListener("mouseleave", () => {
+    trainers.forEach(c => {
+      c.style.opacity = "1";
+      c.style.transform = "scale(1)";
+    });
+  });
+});
