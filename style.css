@@ -1745,3 +1745,68 @@ body{
   }
 
 }
+.member-tab{
+  display:none;
+  opacity:0;
+  transform:translateY(10px);
+  transition:all .3s ease;
+}
+
+.member-tab.active-tab{
+  display:block;
+  opacity:1;
+  transform:translateY(0);
+}
+@media(max-width:768px){
+
+  .member-layout{
+    flex-direction:column;
+  }
+
+  .member-sidebar{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:10px;
+    padding:15px;
+  }
+
+  .member-sidebar button{
+    flex:1 1 45%;
+    font-size:13px;
+    padding:10px;
+  }
+
+  .member-main{
+    padding:20px 15px;
+  }
+
+}
+.stat-card{
+  border-radius:20px;
+  background:rgba(255,255,255,0.03);
+  border:1px solid rgba(255,255,255,0.06);
+  transition:all .3s ease;
+}
+
+.stat-card:hover{
+  transform:translateY(-5px);
+  border-color:#00e6c3;
+}
+@media(max-width:768px){
+  .stat-card:hover{
+    transform:none;
+  }
+}
+#mFeeStatus{
+  font-size:28px;
+  font-weight:700;
+}
+
+#mFeeStatus.expired{
+  color:#ff4d4d;
+}
+
+#mFeeStatus.active{
+  color:#00e6c3;
+}

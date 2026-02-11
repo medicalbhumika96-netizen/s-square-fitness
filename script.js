@@ -448,3 +448,30 @@ trainers.forEach(card => {
     });
   });
 });
+// ===== MEMBER TAB SWITCH =====
+function showMemberTab(tabId){
+  const tabs = document.querySelectorAll(".member-tab");
+
+  tabs.forEach(tab => {
+    tab.classList.remove("active-tab");
+  });
+
+  const activeTab = document.getElementById(tabId);
+  if(activeTab){
+    activeTab.classList.add("active-tab");
+  }
+}
+if(status === "Expired"){
+  document.getElementById("mFeeStatus").classList.add("expired");
+}
+
+
+// ===== RENEW FEE =====
+function renewFee(){
+  alert("Contact gym admin to renew your membership.");
+}
+
+// ===== CHAT TRAINER =====
+function chatTrainer(){
+  window.open("https://wa.me/918003929804", "_blank");
+}
