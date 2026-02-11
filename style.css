@@ -1428,32 +1428,7 @@ body{
   color:#00e6c3;
   margin-bottom:5px;
 }
-.box{
-  position:relative;
-  background:#111;
-  border-radius:18px;
-  padding:40px 20px;
-  transition:all .3s ease;
-  border:1px solid #1c1c1c;
-}
 
-.box:hover{
-  border:1px solid #00e6c3;
-  box-shadow:0 15px 35px rgba(0,230,195,.12);
-  transform:translateY(-6px);
-}
-
-.feature-icon{
-  font-size:32px;
-  margin-bottom:15px;
-}
-.section-soft{
-  background:
-    radial-gradient(circle at top right,
-    rgba(0,230,195,0.08),
-    transparent 40%),
-    #0f1720;
-}
 /* =========================
    WHY SECTION – PREMIUM
 ========================= */
@@ -1679,4 +1654,94 @@ body{
 
 .trainer-card:active{
   transform:scale(0.96);
+}
+/* =========================
+   MOBILE OPTIMIZATION CORE
+========================= */
+
+@media (max-width: 768px){
+
+  h2{
+    font-size:1.8rem;
+  }
+
+  section{
+    padding:60px 15px !important;
+  }
+
+  .container{
+    padding:40px 15px !important;
+  }
+
+  .btn{
+    padding:10px 20px;
+    font-size:14px;
+  }
+
+}
+@media (max-width:768px){
+
+  .trainer-grid{
+    gap:25px;
+  }
+
+  .trainer-img img{
+    height:220px;
+  }
+
+  .trainer-card{
+    border-radius:18px;
+  }
+
+  .trainer-info{
+    padding:18px;
+  }
+
+  .trainer-social{
+    opacity:1; /* always visible on mobile */
+    transform:none;
+  }
+
+}
+@media (max-width:768px){
+
+  .why-container{
+    grid-template-columns:1fr !important;
+    gap:35px;
+  }
+
+  .why-left{
+    text-align:center;
+  }
+
+  .why-card{
+    padding:20px;
+  }
+
+  .why-card:hover{
+    transform:none;
+  }
+
+}
+@media (max-width:768px){
+
+  .gallery-grid{
+    grid-template-columns:1fr !important;
+  }
+
+  .gym-card img{
+    height:240px;
+  }
+
+}
+@media (max-width:768px){
+
+  .plans-grid{
+    grid-template-columns:1fr !important;
+  }
+
+  .plan-card{
+    padding:25px;
+  }
+
 }
